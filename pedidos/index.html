@@ -30,6 +30,10 @@
   #login button:hover{background:var(--sage-dark)}
   #login .err{color:var(--berry);font-size:.85rem;margin-top:12px;min-height:18px;font-weight:700}
 
+  .nav-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .nav-bar a{text-decoration:none;font-size:.82rem;font-weight:700;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);padding:7px 14px;border-radius:20px;transition:.15s}
+  .nav-bar a:hover{border-color:var(--sage);color:var(--olive)}
+  .nav-bar a.nav-active{background:var(--sage);color:#fff;border-color:var(--sage)}
   header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-bottom:18px;margin-bottom:22px;border-bottom:2px solid var(--line)}
   .brand-h{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.4rem;color:var(--sage-dark);line-height:.9}
   .brand-h small{display:block;font-family:'Nunito';font-style:normal;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--sage);font-weight:700;margin-top:4px}
@@ -165,6 +169,11 @@
 </div>
 
 <div class="wrap" id="app" style="display:none">
+  <div class="nav-bar">
+    <a href="/">🏠 Inicio</a>
+    <a href="/calculadora/">🧮 Calculadora</a>
+    <a href="/pedidos/" class="nav-active">📋 Pedidos</a>
+  </div>
   <header>
     <div class="brand-h">Sablée<small>Pedidos &amp; Cocina</small></div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
