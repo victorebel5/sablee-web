@@ -125,6 +125,10 @@
     <button class="tbtn alt" onclick="abrirFlyer()">📋 Generar lista de precios</button>
   </div>
 
+  <div style="background:rgba(199,154,60,.12);border:1px dashed var(--gold);border-radius:11px;padding:11px 14px;font-size:.84rem;color:var(--gold);margin-bottom:18px;font-weight:700">
+    💡 Consejo: primero escribí los datos y tocá <b>💾 Guardar</b>. Después subí la foto. Así no se pierde nada.
+  </div>
+
   <div class="prod-list" id="lista"></div>
 </div>
 
@@ -273,8 +277,13 @@ async function subirFoto(id,input){
   const {error:dbErr}=await sb.from('productos').update({imagen:url}).eq('id',id);
   if(dbErr){st.textContent='Foto subida pero no se guardó: '+dbErr.message;return;}
   const p=productos.find(x=>x.id===id);if(p)p.imagen=url;
+  // Actualiza SOLO la imagen de esta tarjeta, sin redibujar todo (no pierde lo escrito)
+  const card=document.querySelector('.prod[data-id="'+id+'"]');
+  const cont=card.firstElementChild;
+  const nueva=document.createElement('img');
+  nueva.className='prod-foto';nueva.src=url;nueva.alt='';
+  cont.replaceWith(nueva);
   st.textContent='✓ Foto actualizada';
-  render();
   setTimeout(()=>{const s=$('st-'+id);if(s)s.textContent='';},2500);
 }
 
