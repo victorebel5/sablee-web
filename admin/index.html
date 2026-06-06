@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sablée · Administración</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --cream:#f3efe4;--cream-2:#e9e3d2;--paper:#fbf9f1;
+    --sage:#8a9a6f;--sage-dark:#6f8056;--sage-deep:#56663f;--olive:#4f5d3a;
+    --berry:#b46a7e;--ink:#48503a;--ink-soft:#74795f;--line:#d9d3bf;--shadow:rgba(79,93,58,.13);
+    --tom:#c4623d;--gold:#c79a3c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',sans-serif;background:
+      radial-gradient(circle at 12% 6%, #e9e8d3 0%, transparent 42%),
+      radial-gradient(circle at 90% 10%, #e6e6cf 0%, transparent 44%),
+      var(--cream);color:var(--ink);min-height:100vh;padding:20px 16px 70px;line-height:1.45}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  #login{max-width:380px;margin:60px auto;background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 40px var(--shadow);padding:34px 30px;text-align:center}
+  #login .brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.6rem;color:var(--sage-dark);line-height:1}
+  #login .sub{font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;color:var(--sage);font-weight:700;margin:3px 0 22px}
+  #login input{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:1rem;font-family:'Nunito';margin-bottom:12px;background:#fff;color:var(--ink)}
+  #login input:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px rgba(138,154,111,.2)}
+  #login button{width:100%;background:var(--sage);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Nunito';font-weight:800;font-size:1rem;cursor:pointer}
+  #login button:hover{background:var(--sage-dark)}
+  #login .err{color:var(--berry);font-size:.85rem;margin-top:12px;min-height:18px;font-weight:700}
+
+  .nav-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .nav-bar a{text-decoration:none;font-size:.82rem;font-weight:700;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);padding:7px 14px;border-radius:20px;transition:.15s}
+  .nav-bar a:hover{border-color:var(--sage);color:var(--olive)}
+  .nav-bar a.nav-active{background:var(--sage);color:#fff;border-color:var(--sage)}
+
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-bottom:18px;margin-bottom:22px;border-bottom:2px solid var(--line)}
+  .brand-h{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.4rem;color:var(--sage-dark);line-height:.9}
+  .brand-h small{display:block;font-family:'Nunito';font-style:normal;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--sage);font-weight:700;margin-top:4px}
+  .who{font-size:.8rem;color:var(--ink-soft)}.who b{color:var(--olive)}
+  .who button{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 10px;margin-left:8px;cursor:pointer;color:var(--ink-soft);font-family:'Nunito';font-size:.78rem}
+  .who button:hover{border-color:var(--berry);color:var(--berry)}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+  .tbtn{background:var(--sage);color:#fff;border:none;border-radius:12px;font-family:'Nunito';font-weight:800;font-size:.92rem;padding:12px 20px;cursor:pointer;transition:.16s}
+  .tbtn:hover{background:var(--sage-dark)}
+  .tbtn.alt{background:var(--gold)}
+  .tbtn.alt:hover{background:#b3892e}
+
+  .prod-list{display:grid;gap:12px}
+  .prod{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;grid-template-columns:84px 1fr auto;gap:16px;align-items:start;box-shadow:0 6px 18px var(--shadow)}
+  @media(max-width:640px){.prod{grid-template-columns:1fr}}
+  .prod-foto{width:84px;height:84px;border-radius:12px;object-fit:cover;background:var(--cream-2);border:1px solid var(--line)}
+  .prod-foto-empty{width:84px;height:84px;border-radius:12px;background:var(--cream-2);border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:2rem}
+  .prod-fields{display:grid;gap:8px}
+  .prod-fields .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:640px){.prod-fields .row{grid-template-columns:1fr}}
+  label{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:800;margin-bottom:3px}
+  input,textarea,select{width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:'Nunito';font-size:.92rem;padding:9px 11px;transition:.15s}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px rgba(138,154,111,.2)}
+  textarea{resize:vertical;min-height:42px}
+  .prod-acts{display:flex;flex-direction:column;gap:7px;min-width:130px}
+  .mini{border:1px solid var(--line);background:var(--cream);color:var(--ink-soft);font-family:'Nunito';font-weight:700;font-size:.8rem;padding:8px 10px;border-radius:9px;cursor:pointer;transition:.15s;text-align:center}
+  .mini:hover{border-color:var(--sage);color:var(--olive)}
+  .mini.save{background:var(--sage);color:#fff;border-color:var(--sage)}
+  .mini.save:hover{background:var(--sage-dark)}
+  .mini.del:hover{border-color:var(--berry);color:var(--berry)}
+  .mini.upload{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .mini.upload:hover{background:#b3892e}
+  .chk{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--ink-soft)}
+  .chk input{width:auto}
+  .status{font-size:.78rem;color:var(--sage-deep);min-height:16px;font-weight:700}
+
+  .empty{text-align:center;color:var(--ink-soft);padding:46px 20px;font-size:.92rem}
+  .empty .big{font-size:2.6rem;margin-bottom:8px;opacity:.5}
+
+  /* MODAL FLYER */
+  .modal{position:fixed;inset:0;background:rgba(72,80,58,.6);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:1000;overflow:auto}
+  .modal.show{display:flex}
+  .modal-inner{background:var(--paper);border-radius:18px;padding:22px;max-width:540px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .modal-inner h3{font-family:'Fraunces',serif;color:var(--olive);margin-bottom:14px}
+  .modal-acts{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+
+  /* FLYER (lo que se descarga) */
+  #flyer{background:linear-gradient(160deg,#fbf9f1,#efe7dc);padding:34px 30px;border-radius:0;width:480px;margin:0 auto}
+  #flyer .f-head{text-align:center;margin-bottom:24px}
+  #flyer .f-brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.6rem;color:var(--sage-dark);line-height:1}
+  #flyer .f-sub{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--sage);font-weight:700;margin-top:4px}
+  #flyer .f-title{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--olive);text-align:center;margin:8px 0 20px}
+  #flyer .f-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(138,154,111,.25)}
+  #flyer .f-foto{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--cream-2)}
+  #flyer .f-foto-empty{width:54px;height:54px;border-radius:10px;background:var(--cream-2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+  #flyer .f-name{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--ink);flex:1}
+  #flyer .f-price{font-family:'Fraunces',serif;font-weight:900;font-size:1.1rem;color:var(--gold);white-space:nowrap}
+  #flyer .f-foot{text-align:center;margin-top:22px;font-size:.78rem;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="brand">Sablée</div>
+  <div class="sub">Administración</div>
+  <input type="email" id="li-email" placeholder="Tu email" autocomplete="username">
+  <input type="password" id="li-pass" placeholder="Contraseña" autocomplete="current-password">
+  <button id="li-btn">Entrar</button>
+  <div class="err" id="li-err"></div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <div class="nav-bar">
+    <a href="/">🏠 Inicio</a>
+    <a href="/calculadora/">🧮 Calculadora</a>
+    <a href="/pedidos/">📋 Pedidos</a>
+    <a href="/admin/" class="nav-active">⚙️ Catálogo</a>
+  </div>
+  <header>
+    <div class="brand-h">Sablée<small>Administración del catálogo</small></div>
+    <div class="who"><b id="who-email"></b><button id="logout">Salir</button></div>
+  </header>
+
+  <div class="toolbar">
+    <button class="tbtn" onclick="nuevoProducto()">＋ Agregar producto</button>
+    <button class="tbtn alt" onclick="abrirFlyer()">📋 Generar lista de precios</button>
+  </div>
+
+  <div class="prod-list" id="lista"></div>
+</div>
+
+<!-- MODAL FLYER -->
+<div class="modal" id="modal-flyer">
+  <div class="modal-inner">
+    <h3>Lista de precios</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:14px">Vista previa. Descargala como imagen para compartir por WhatsApp.</p>
+    <div id="flyer"></div>
+    <div class="modal-acts">
+      <button class="tbtn alt" onclick="descargarFlyer()">⬇ Descargar imagen</button>
+      <button class="mini" onclick="cerrarFlyer()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://pjrgybkexbxrlyvhtiyh.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcmd5YmtleGJ4cmx5dmh0aXloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgxOTUsImV4cCI6MjA5NTk5NDE5NX0.Ts3EBhp9XbKiq9sVopNXDxAjAoqa9STrh5WXpMj-vQA';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=id=>document.getElementById(id);
+const BUCKET='productos';
+let productos=[];
+
+/* ---------- AUTH ---------- */
+async function checkSession(){
+  const {data}=await sb.auth.getSession();
+  if(data.session)entrar(data.session.user);else{$('login').style.display='block';$('app').style.display='none';}
+}
+function entrar(user){
+  $('login').style.display='none';$('app').style.display='block';
+  $('who-email').textContent=user.email;
+  cargar();
+}
+$('li-btn').addEventListener('click',doLogin);
+$('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+async function doLogin(){
+  $('li-err').textContent='';
+  const email=$('li-email').value.trim(),pass=$('li-pass').value;
+  if(!email||!pass){$('li-err').textContent='Completá email y contraseña.';return;}
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){$('li-err').textContent='No se pudo entrar: '+error.message;return;}
+  entrar(data.user);
+}
+$('logout').addEventListener('click',async()=>{await sb.auth.signOut();location.reload();});
+
+/* ---------- CARGAR PRODUCTOS ---------- */
+async function cargar(){
+  const {data,error}=await sb.from('productos').select('*').order('orden',{ascending:true});
+  if(error){alert('Error al cargar: '+error.message);return;}
+  productos=data||[];
+  render();
+}
+
+function render(){
+  const box=$('lista');
+  if(!productos.length){box.innerHTML='<div class="empty"><div class="big">🧁</div>No hay productos. Tocá “Agregar producto” para empezar.</div>';return;}
+  box.innerHTML=productos.map(p=>tarjeta(p)).join('');
+}
+
+function tarjeta(p){
+  const foto=p.imagen
+    ? `<img class="prod-foto" src="${esc(p.imagen)}" alt="">`
+    : `<div class="prod-foto-empty">${p.emoji||'🧁'}</div>`;
+  return `<div class="prod" data-id="${p.id}">
+    ${foto}
+    <div class="prod-fields">
+      <div><label>Nombre</label><input class="f-nombre" value="${esc(p.nombre||'')}"></div>
+      <div class="row">
+        <div><label>Precio</label><input class="f-precio" value="${esc(p.precio||'')}" placeholder="$0"></div>
+        <div><label>Emoji</label><input class="f-emoji" value="${esc(p.emoji||'')}" placeholder="🧁"></div>
+      </div>
+      <div><label>Descripción</label><textarea class="f-desc">${esc(p.descripcion||'')}</textarea></div>
+      <div class="row">
+        <div><label>Categoría</label>
+          <select class="f-cat">
+            <option value="stock"${p.categoria==='stock'?' selected':''}>Para llevar ya (stock)</option>
+            <option value="encargo"${p.categoria==='encargo'?' selected':''}>Por encargo</option>
+          </select>
+        </div>
+        <div><label>Orden</label><input class="f-orden" type="number" value="${p.orden||0}"></div>
+      </div>
+      <label class="chk"><input type="checkbox" class="f-disp"${p.disponible?' checked':''}> Disponible (se muestra en la web)</label>
+      <div class="status" id="st-${p.id}"></div>
+    </div>
+    <div class="prod-acts">
+      <button class="mini save" onclick="guardar(${p.id})">💾 Guardar</button>
+      <button class="mini upload" onclick="document.getElementById('file-${p.id}').click()">📷 Subir foto</button>
+      <input type="file" id="file-${p.id}" accept="image/*" style="display:none" onchange="subirFoto(${p.id},this)">
+      <button class="mini del" onclick="borrar(${p.id})">🗑 Borrar</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- GUARDAR ---------- */
+async function guardar(id){
+  const card=document.querySelector('.prod[data-id="'+id+'"]');
+  const st=$('st-'+id);st.textContent='Guardando...';
+  const datos={
+    nombre:card.querySelector('.f-nombre').value.trim(),
+    precio:card.querySelector('.f-precio').value.trim(),
+    emoji:card.querySelector('.f-emoji').value.trim(),
+    descripcion:card.querySelector('.f-desc').value.trim(),
+    categoria:card.querySelector('.f-cat').value,
+    orden:parseInt(card.querySelector('.f-orden').value)||0,
+    disponible:card.querySelector('.f-disp').checked
+  };
+  const {error}=await sb.from('productos').update(datos).eq('id',id);
+  if(error){st.textContent='Error: '+error.message;return;}
+  st.textContent='✓ Guardado';
+  const p=productos.find(x=>x.id===id);if(p)Object.assign(p,datos);
+  setTimeout(()=>st.textContent='',2500);
+}
+
+/* ---------- NUEVO ---------- */
+async function nuevoProducto(){
+  const maxOrden=productos.reduce((m,p)=>Math.max(m,p.orden||0),0);
+  const {data,error}=await sb.from('productos').insert({
+    nombre:'Nuevo producto',precio:'',emoji:'🧁',descripcion:'',
+    categoria:'stock',orden:maxOrden+1,disponible:false
+  }).select();
+  if(error){alert('Error: '+error.message);return;}
+  await cargar();
+  window.scrollTo(0,document.body.scrollHeight);
+}
+
+/* ---------- BORRAR ---------- */
+async function borrar(id){
+  const p=productos.find(x=>x.id===id);
+  if(!confirm('¿Borrar "'+(p?p.nombre:'')+'"? Esta acción no se puede deshacer.'))return;
+  const {error}=await sb.from('productos').delete().eq('id',id);
+  if(error){alert('Error: '+error.message);return;}
+  await cargar();
+}
+
+/* ---------- SUBIR FOTO ---------- */
+async function subirFoto(id,input){
+  const file=input.files[0];if(!file)return;
+  const st=$('st-'+id);st.textContent='Subiendo foto...';
+  const ext=file.name.split('.').pop().toLowerCase();
+  const path='prod-'+id+'-'+Date.now()+'.'+ext;
+  const {error:upErr}=await sb.storage.from(BUCKET).upload(path,file,{upsert:true});
+  if(upErr){st.textContent='Error al subir: '+upErr.message;return;}
+  const {data:pub}=sb.storage.from(BUCKET).getPublicUrl(path);
+  const url=pub.publicUrl;
+  const {error:dbErr}=await sb.from('productos').update({imagen:url}).eq('id',id);
+  if(dbErr){st.textContent='Foto subida pero no se guardó: '+dbErr.message;return;}
+  const p=productos.find(x=>x.id===id);if(p)p.imagen=url;
+  st.textContent='✓ Foto actualizada';
+  render();
+  setTimeout(()=>{const s=$('st-'+id);if(s)s.textContent='';},2500);
+}
+
+/* ---------- FLYER ---------- */
+function abrirFlyer(){
+  const disp=productos.filter(p=>p.disponible);
+  if(!disp.length){alert('No hay productos marcados como disponibles para incluir en la lista.');return;}
+  const items=disp.map(p=>{
+    const foto=p.imagen?`<img class="f-foto" src="${esc(p.imagen)}" crossorigin="anonymous">`:`<div class="f-foto-empty">${p.emoji||'🧁'}</div>`;
+    return `<div class="f-item">${foto}<div class="f-name">${esc(p.nombre)}</div><div class="f-price">${esc(p.precio||'')}</div></div>`;
+  }).join('');
+  $('flyer').innerHTML=`
+    <div class="f-head"><div class="f-brand">Sablée</div><div class="f-sub">Dulces Momentos</div></div>
+    <div class="f-title">Lista de precios</div>
+    ${items}
+    <div class="f-foot">Consultas y pedidos · ¡Gracias! 🧁</div>`;
+  $('modal-flyer').classList.add('show');
+}
+function cerrarFlyer(){$('modal-flyer').classList.remove('show');}
+async function descargarFlyer(){
+  const node=$('flyer');
+  try{
+    const canvas=await html2canvas(node,{scale:2,useCORS:true,backgroundColor:null});
+    const link=document.createElement('a');
+    link.download='lista-precios-sablee.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){
+    alert('No se pudo generar la imagen. Puede deberse a una foto que no permite descarga. Probá de nuevo.');
+    console.error(e);
+  }
+}
+
+/* ---------- UTILS ---------- */
+function esc(s){return(s||'').toString().replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+checkSession();
+</script>
+</body>
+</html>
