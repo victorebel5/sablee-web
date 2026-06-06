@@ -329,9 +329,12 @@
     const precio = p.precio || '';
     const nombreEsc = (p.nombre || '').replace(/'/g, "\\'");
     const catEsc = (p.categoria || 'stock');
+    const visual = p.imagen
+      ? `<img src="${p.imagen}" alt="${p.nombre}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:12px">`
+      : `<div class="emoji">${emoji}</div>`;
     return `
       <div class="card reveal">
-        <div class="emoji">${emoji}</div>
+        ${visual}
         <h3>${p.nombre}</h3>
         <div class="desc">${desc}</div>
         <div class="precio">${precio}</div>
