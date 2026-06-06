@@ -84,17 +84,53 @@
   .modal-acts{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
 
   /* FLYER (lo que se descarga) */
-  #flyer{background:linear-gradient(160deg,#fbf9f1,#efe7dc);padding:34px 30px;border-radius:0;width:480px;margin:0 auto}
-  #flyer .f-head{text-align:center;margin-bottom:24px}
-  #flyer .f-brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.6rem;color:var(--sage-dark);line-height:1}
-  #flyer .f-sub{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--sage);font-weight:700;margin-top:4px}
-  #flyer .f-title{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--olive);text-align:center;margin:8px 0 20px}
-  #flyer .f-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(138,154,111,.25)}
-  #flyer .f-foto{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--cream-2)}
-  #flyer .f-foto-empty{width:54px;height:54px;border-radius:10px;background:var(--cream-2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
-  #flyer .f-name{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--ink);flex:1}
-  #flyer .f-price{font-family:'Fraunces',serif;font-weight:900;font-size:1.1rem;color:var(--gold);white-space:nowrap}
-  #flyer .f-foot{text-align:center;margin-top:22px;font-size:.78rem;color:var(--ink-soft)}
+  /* FLYER PROFESIONAL */
+  .flyer{position:relative;overflow:hidden;font-family:'Nunito',sans-serif;
+    background:
+      radial-gradient(circle at 85% 8%, rgba(155,176,74,.10), transparent 40%),
+      radial-gradient(circle at 10% 95%, rgba(199,154,60,.10), transparent 42%),
+      linear-gradient(165deg,#fbf9f1 0%,#f3efe4 55%,#ece4d3 100%)}
+  .flyer.post{width:540px;height:540px}
+  .flyer.story{width:405px;height:720px}
+  .flyer-pad{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:34px 32px}
+  /* motivos decorativos sutiles */
+  .flyer .deco{position:absolute;font-size:2.2rem;opacity:.13;z-index:1;filter:grayscale(20%)}
+  .flyer .d1{top:18px;left:22px;transform:rotate(-12deg)}
+  .flyer .d2{bottom:24px;right:24px;transform:rotate(10deg);font-size:2.6rem}
+  .flyer .d3{top:42%;right:18px;font-size:1.7rem;transform:rotate(8deg)}
+  /* cabecera */
+  .flyer .fh{text-align:center;flex-shrink:0;margin-bottom:14px}
+  .flyer .fh .fbrand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;color:var(--sage-dark);line-height:.95}
+  .flyer.post .fh .fbrand{font-size:2.9rem}
+  .flyer.story .fh .fbrand{font-size:2.6rem}
+  .flyer .fh .fsub{font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--sage);font-weight:800;margin-top:3px}
+  .flyer .fh .frule{width:54px;height:2px;background:var(--gold);margin:12px auto 0;border-radius:2px}
+  .flyer .fh .ftitle{font-family:'Fraunces',serif;font-weight:600;color:var(--olive);margin-top:12px}
+  .flyer.post .fh .ftitle{font-size:1.15rem}
+  .flyer.story .fh .ftitle{font-size:1.25rem}
+  /* lista */
+  .flyer .fitems{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:0}
+  .flyer .fitem{display:flex;align-items:center;gap:13px;padding:9px 4px}
+  .flyer .fitem+.fitem{border-top:1px solid rgba(138,154,111,.22)}
+  .flyer .ffoto{border-radius:12px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 10px rgba(79,93,58,.18);border:2px solid #fff}
+  .flyer.post .ffoto{width:60px;height:60px}
+  .flyer.story .ffoto{width:64px;height:64px}
+  .flyer .ffoto-e{border-radius:12px;background:var(--cream-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid #fff}
+  .flyer.post .ffoto-e{width:60px;height:60px;font-size:1.8rem}
+  .flyer.story .ffoto-e{width:64px;height:64px;font-size:2rem}
+  .flyer .fmeta{flex:1;min-width:0}
+  .flyer .fname{font-family:'Fraunces',serif;font-weight:600;color:var(--ink);line-height:1.15}
+  .flyer.post .fname{font-size:1.02rem}
+  .flyer.story .fname{font-size:1.08rem}
+  .flyer .fdesc{font-size:.72rem;color:var(--ink-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .flyer .fdots{flex:1;border-bottom:2px dotted rgba(138,154,111,.4);margin:0 4px;min-width:14px;align-self:flex-end;margin-bottom:6px}
+  .flyer .fprice{font-family:'Fraunces',serif;font-weight:900;color:var(--gold);white-space:nowrap}
+  .flyer.post .fprice{font-size:1.1rem}
+  .flyer.story .fprice{font-size:1.18rem}
+  /* pie */
+  .flyer .ff{flex-shrink:0;text-align:center;margin-top:14px;padding-top:12px;border-top:1.5px solid rgba(199,154,60,.4)}
+  .flyer .ff .fcta{font-family:'Fraunces',serif;font-style:italic;color:var(--sage-deep);font-size:.95rem}
+  .flyer .ff .fweb{font-size:.66rem;letter-spacing:.12em;color:var(--ink-soft);margin-top:5px;text-transform:uppercase;font-weight:700}
 </style>
 </head>
 <body>
@@ -122,7 +158,7 @@
 
   <div class="toolbar">
     <button class="tbtn" onclick="nuevoProducto()">＋ Agregar producto</button>
-    <button class="tbtn alt" onclick="abrirFlyer()">📋 Generar lista de precios</button>
+    <button class="tbtn alt" onclick="abrirFlyer()">📋 Crear lista para redes</button>
   </div>
 
   <div style="background:rgba(199,154,60,.12);border:1px dashed var(--gold);border-radius:11px;padding:11px 14px;font-size:.84rem;color:var(--gold);margin-bottom:18px;font-weight:700">
@@ -134,10 +170,25 @@
 
 <!-- MODAL FLYER -->
 <div class="modal" id="modal-flyer">
-  <div class="modal-inner">
-    <h3>Lista de precios</h3>
-    <p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:14px">Vista previa. Descargala como imagen para compartir por WhatsApp.</p>
-    <div id="flyer"></div>
+  <div class="modal-inner" style="max-width:680px">
+    <h3>Crear lista de precios para redes</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:14px">Elegí qué productos incluir y el formato. Después descargá la imagen para compartir.</p>
+
+    <label style="margin-bottom:8px">Formato</label>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="mini" id="fmt-post" onclick="setFormato('post')" style="flex:1">📱 Feed (cuadrado)</button>
+      <button class="mini" id="fmt-story" onclick="setFormato('story')" style="flex:1">📲 Historia (vertical)</button>
+    </div>
+
+    <label style="margin-bottom:8px">Productos a incluir</label>
+    <div id="sel-prods" style="display:grid;gap:6px;max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:16px;background:#fff"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="tbtn" onclick="generarFlyer()" style="flex:1">✨ Generar vista previa</button>
+    </div>
+
+    <div id="flyer-preview" style="display:flex;justify-content:center;overflow:auto;background:var(--cream-2);border-radius:12px;padding:16px;max-height:520px"></div>
+
     <div class="modal-acts">
       <button class="tbtn alt" onclick="descargarFlyer()">⬇ Descargar imagen</button>
       <button class="mini" onclick="cerrarFlyer()">Cerrar</button>
@@ -288,31 +339,77 @@ async function subirFoto(id,input){
 }
 
 /* ---------- FLYER ---------- */
+let formatoFlyer='post';
 function abrirFlyer(){
   const disp=productos.filter(p=>p.disponible);
-  if(!disp.length){alert('No hay productos marcados como disponibles para incluir en la lista.');return;}
-  const items=disp.map(p=>{
-    const foto=p.imagen?`<img class="f-foto" src="${esc(p.imagen)}" crossorigin="anonymous">`:`<div class="f-foto-empty">${p.emoji||'🧁'}</div>`;
-    return `<div class="f-item">${foto}<div class="f-name">${esc(p.nombre)}</div><div class="f-price">${esc(p.precio||'')}</div></div>`;
-  }).join('');
-  $('flyer').innerHTML=`
-    <div class="f-head"><div class="f-brand">Sablée</div><div class="f-sub">Dulces Momentos</div></div>
-    <div class="f-title">Lista de precios</div>
-    ${items}
-    <div class="f-foot">Consultas y pedidos · ¡Gracias! 🧁</div>`;
+  if(!disp.length){alert('No hay productos marcados como disponibles. Marcá al menos uno como “Disponible” y guardá.');return;}
+  // checklist de productos
+  $('sel-prods').innerHTML=disp.map(p=>`
+    <label class="chk" style="padding:4px 0">
+      <input type="checkbox" class="sel-p" value="${p.id}" checked>
+      ${p.imagen?'📷':'·'} ${esc(p.nombre)} <span style="color:var(--gold);font-weight:800;margin-left:auto">${esc(p.precio||'')}</span>
+    </label>`).join('');
+  setFormato('post');
+  $('flyer-preview').innerHTML='<p style="color:var(--ink-soft);font-size:.85rem;padding:30px">Elegí productos y tocá “Generar vista previa”.</p>';
   $('modal-flyer').classList.add('show');
+}
+function setFormato(f){
+  formatoFlyer=f;
+  $('fmt-post').style.background=f==='post'?'var(--sage)':'';
+  $('fmt-post').style.color=f==='post'?'#fff':'';
+  $('fmt-post').style.borderColor=f==='post'?'var(--sage)':'';
+  $('fmt-story').style.background=f==='story'?'var(--sage)':'';
+  $('fmt-story').style.color=f==='story'?'#fff':'';
+  $('fmt-story').style.borderColor=f==='story'?'var(--sage)':'';
+}
+function generarFlyer(){
+  const ids=[...document.querySelectorAll('.sel-p:checked')].map(c=>c.value);
+  if(!ids.length){alert('Elegí al menos un producto.');return;}
+  const sel=productos.filter(p=>ids.includes(String(p.id)));
+  const max=formatoFlyer==='post'?6:8;
+  if(sel.length>max){
+    if(!confirm('Elegiste '+sel.length+' productos. En formato '+(formatoFlyer==='post'?'cuadrado':'historia')+' entran cómodos hasta '+max+'. Si ponés más, pueden verse apretados. ¿Continuar igual?'))return;
+  }
+  const items=sel.map(p=>{
+    const foto=p.imagen
+      ? `<img class="ffoto" src="${esc(p.imagen)}" crossorigin="anonymous">`
+      : `<div class="ffoto-e">${p.emoji||'🧁'}</div>`;
+    const desc=p.descripcion?`<div class="fdesc">${esc(p.descripcion)}</div>`:'';
+    return `<div class="fitem">${foto}
+      <div class="fmeta"><div class="fname">${esc(p.nombre)}</div>${desc}</div>
+      <div class="fdots"></div>
+      <div class="fprice">${esc(p.precio||'')}</div></div>`;
+  }).join('');
+  $('flyer-preview').innerHTML=`
+    <div class="flyer ${formatoFlyer}" id="flyer-render">
+      <span class="deco d1">🌿</span><span class="deco d2">🧁</span><span class="deco d3">🍰</span>
+      <div class="flyer-pad">
+        <div class="fh">
+          <div class="fbrand">Sablée</div>
+          <div class="fsub">Dulces Momentos</div>
+          <div class="frule"></div>
+          <div class="ftitle">Lista de precios</div>
+        </div>
+        <div class="fitems">${items}</div>
+        <div class="ff">
+          <div class="fcta">Hacé tu pedido por WhatsApp 🤍</div>
+          <div class="fweb">sablee-web.vercel.app</div>
+        </div>
+      </div>
+    </div>`;
 }
 function cerrarFlyer(){$('modal-flyer').classList.remove('show');}
 async function descargarFlyer(){
-  const node=$('flyer');
+  const node=$('flyer-render');
+  if(!node){alert('Primero generá la vista previa.');return;}
   try{
-    const canvas=await html2canvas(node,{scale:2,useCORS:true,backgroundColor:null});
+    const canvas=await html2canvas(node,{scale:3,useCORS:true,backgroundColor:null,logging:false});
     const link=document.createElement('a');
-    link.download='lista-precios-sablee.png';
+    link.download='sablee-precios-'+formatoFlyer+'.png';
     link.href=canvas.toDataURL('image/png');
     link.click();
   }catch(e){
-    alert('No se pudo generar la imagen. Puede deberse a una foto que no permite descarga. Probá de nuevo.');
+    alert('No se pudo generar la imagen. Si alguna foto falla, probá volver a subirla desde el admin. Detalle: '+e.message);
     console.error(e);
   }
 }
