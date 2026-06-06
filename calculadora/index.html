@@ -140,7 +140,11 @@
   .session-bar button.save{background:var(--sage);color:#fff;border-color:var(--sage)}
   .session-bar button.save:hover{background:var(--sage-dark)}
   .cloud-tag{font-size:.72rem;background:rgba(138,154,111,.15);color:var(--sage-deep);padding:3px 10px;border-radius:12px;font-weight:700}
-  @media print{body{background:#fff;padding:0}.toolbar,.add-btn,.del-btn,.col-x,.tab .close,.tab-add,.session-bar{display:none!important}.card,.summary{box-shadow:none;border:1px solid #ccc}}
+  .nav-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .nav-bar a{text-decoration:none;font-size:.82rem;font-weight:700;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);padding:7px 14px;border-radius:20px;transition:.15s}
+  .nav-bar a:hover{border-color:var(--sage);color:var(--olive)}
+  .nav-bar a.nav-active{background:var(--sage);color:#fff;border-color:var(--sage)}
+  @media print{body{background:#fff;padding:0}.toolbar,.add-btn,.del-btn,.col-x,.tab .close,.tab-add,.session-bar,.nav-bar{display:none!important}.card,.summary{box-shadow:none;border:1px solid #ccc}}
   @media(max-width:560px){.brand{font-size:2.3rem}.stat .val{font-size:1.55rem}}
 </style>
 </head>
@@ -155,6 +159,12 @@
 </div>
 
 <div class="wrap" id="appwrap" style="display:none">
+  <div class="nav-bar">
+    <a href="/">🏠 Inicio</a>
+    <a href="/calculadora/" class="nav-active">🧮 Calculadora</a>
+    <a href="/pedidos/">📋 Pedidos</a>
+    <a href="/admin/">⚙️ Catálogo</a>
+  </div>
   <div class="session-bar">
     <div>Sesión: <b id="who"></b> <span class="cloud-tag">☁ Guardado en la nube</span></div>
     <div class="right">
