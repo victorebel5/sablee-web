@@ -381,14 +381,38 @@ function normaliza(s){
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // acentos
     .toLowerCase().replace(/[^a-z0-9]/g,'').trim();
 }
+// saca palabras clave (ignora conectores cortos como con, de, la, o, y, el)
+function palabrasClave(s){
+  const stop=['con','de','la','el','los','las','o','y','un','una','del','al','para','x'];
+  return (s||'').toString()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'')
+    .toLowerCase().replace(/[^a-z0-9\s]/g,' ')
+    .split(/\s+/).filter(w=>w.length>2&&!stop.includes(w));
+}
 // busca la receta cuyo nombre coincide con el del producto
 function buscarReceta(nombreProducto){
   const n=normaliza(nombreProducto);
   if(!n)return null;
-  // coincidencia exacta primero, después "contiene"
+  // 1) coincidencia exacta
   let r=recetas.find(x=>normaliza(x.nombre)===n);
-  if(!r)r=recetas.find(x=>normaliza(x.nombre).includes(n)||n.includes(normaliza(x.nombre)));
-  return r||null;
+  if(r)return r;
+  // 2) uno contiene al otro
+  r=recetas.find(x=>{const rn=normaliza(x.nombre);return rn&&(rn.includes(n)||n.includes(rn));});
+  if(r)return r;
+  // 3) por palabras clave compartidas (la mejor coincidencia)
+  const palP=palabrasClave(nombreProducto);
+  if(!palP.length)return null;
+  let mejor=null,mejorScore=0;
+  recetas.forEach(x=>{
+    const palR=palabrasClave(x.nombre);
+    const comunes=palP.filter(w=>palR.includes(w)).length;
+    // puntaje: cuántas palabras comparten, relativo al más corto
+    const score=comunes/Math.min(palP.length,palR.length||1);
+    if(comunes>=1&&score>mejorScore){mejorScore=score;mejor=x;}
+  });
+  // exigimos que compartan al menos la mitad de las palabras clave
+  return mejorScore>=0.5?mejor:null;
 }
 
 async function fetchOrders(){
