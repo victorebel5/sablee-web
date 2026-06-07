@@ -148,6 +148,29 @@
   .agenda-row .ar-right{text-align:right;white-space:nowrap}
   .agenda-row .ar-price{font-family:'Fraunces',serif;font-weight:800;color:var(--gold)}
   .agenda-row .ar-when{font-size:.76rem;color:var(--ink-soft)}
+  /* TOTALIZADOR */
+  .totalizador{background:rgba(199,154,60,.1);border:1px dashed var(--gold);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .totalizador .tot-tit{font-size:.74rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+  .tot-chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:20px;padding:4px 11px;margin:0 5px 5px 0;font-size:.86rem;color:var(--ink)}
+  .tot-chip b{color:var(--sage-deep);font-weight:800}
+  /* CALENDARIO */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .cal-title{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--sage-deep);font-weight:600}
+  .cal-nav{background:var(--paper);border:1px solid var(--line);border-radius:9px;width:38px;height:38px;font-size:1.2rem;cursor:pointer;color:var(--olive)}
+  .cal-nav:hover{border-color:var(--sage);background:var(--cream)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .cal-dow{text-align:center;font-size:.72rem;font-weight:800;color:var(--ink-soft);padding:4px 0;text-transform:uppercase}
+  .cal-cell{background:var(--paper);border:1px solid var(--line);border-radius:9px;min-height:74px;padding:5px 5px 6px;position:relative;overflow:hidden}
+  .cal-cell.empty{background:transparent;border:none}
+  .cal-cell.con-ped{cursor:pointer;border-color:var(--sage);background:#fff}
+  .cal-cell.con-ped:hover{box-shadow:0 4px 12px var(--shadow);transform:translateY(-1px)}
+  .cal-cell.hoy{outline:2px solid var(--gold);outline-offset:-1px}
+  .cal-num{font-size:.78rem;font-weight:800;color:var(--ink-soft);margin-bottom:3px}
+  .cal-cell.con-ped .cal-num{color:var(--sage-deep)}
+  .cal-chip{font-size:.62rem;background:rgba(138,154,111,.16);border-radius:5px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--olive)}
+  .cal-chip b{color:var(--sage-deep)}
+  .cal-mas{font-size:.6rem;color:var(--gold);font-weight:700}
+  @media(max-width:640px){.cal-cell{min-height:58px}.cal-chip{font-size:.55rem}}
 
   #alert-banner{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--tom);color:#fff;padding:14px 24px;border-radius:14px;box-shadow:0 12px 30px rgba(196,98,61,.4);font-weight:800;z-index:9999;display:none;max-width:90%;text-align:center;cursor:pointer}
   #alert-banner.show{display:block;animation:drop .4s ease}
@@ -264,6 +287,10 @@
       <button class="ptab" data-p="week">Por semana</button>
       <button class="ptab" data-p="month">Por mes</button>
     </div>
+    <div class="period-tabs" style="margin-top:8px">
+      <button class="ptab active" id="vis-lista" onclick="setVista('lista')" style="background:var(--sage-deep);color:#fff">📋 Lista</button>
+      <button class="ptab" id="vis-cal" onclick="setVista('calendario')">🗓️ Calendario</button>
+    </div>
     <div style="font-size:.82rem;color:var(--ink-soft);margin-bottom:14px" id="agenda-hint">Mostrando pedidos agrupados por su fecha de entrega.</div>
     <div class="stat-row">
       <div class="stat g"><div class="n" id="a-money">$0</div><div class="l">Facturación período</div></div>
@@ -271,6 +298,7 @@
       <div class="stat h"><div class="n" id="a-count">0</div><div class="l">Pedidos</div></div>
     </div>
     <div id="agenda-body"></div>
+    <div id="agenda-cal" style="display:none"></div>
   </section>
 </div>
 
@@ -419,7 +447,14 @@ $('add').addEventListener('click',async()=>{
 });
 
 window.toggle=async function(id){const o=orders.find(o=>o.id===id);if(o)await sb.from('pedidos').update({estado:o.done?'pendiente':'listo'}).eq('id',id);};
-window.del=async function(id){if(confirm('¿Borrar este pedido?'))await sb.from('pedidos').delete().eq('id',id);};
+window.del=async function(id){
+  const o=orders.find(x=>x.id===id);
+  const nom=o?o.name:'';
+  if(confirm('¿Borrar el pedido de "'+nom+'"?\n\nEsta acción no se puede deshacer.')){
+    const {error}=await sb.from('pedidos').delete().eq('id',id);
+    if(error){alert('No se pudo borrar: '+error.message+'\n\nSi dice algo de permisos, hay que correr el SQL de permisos de borrado.');return;}
+  }
+};
 window.toCal=function(id){const o=orders.find(o=>o.id===id);if(o)downloadICS(o);};
 
 /* ---------- URGENCIA ---------- */
@@ -538,6 +573,12 @@ function renderAgenda(){
     tM+=gM;tP+=gP;tC+=list.length;
     html+=`<div class="agenda-group"><h3><span style="text-transform:capitalize">${esc(k)}</span>
       <span class="gtot">$${gM.toLocaleString('es-AR')} · ${list.length} ped.</span></h3>`;
+    // TOTALIZADOR: suma cantidades por producto en este período
+    const totProd=totalizarProductos(list);
+    if(totProd.length){
+      html+=`<div class="totalizador"><div class="tot-tit">🧁 A preparar:</div>`+
+        totProd.map(t=>`<span class="tot-chip"><b>${t.qty}</b> ${esc(t.nombre)}</span>`).join('')+`</div>`;
+    }
     html+=list.map(o=>`<div class="agenda-row">
       <div class="ar-left"><b>${esc(o.name)}</b> <span class="ar-item">— ${itemsHtml(o.items)}</span>${o.done?' <span class="o-tag">listo</span>':''}</div>
       <div class="ar-right"><div class="ar-price">${o.price?'$'+o.price.toLocaleString('es-AR'):'—'}</div>
@@ -545,6 +586,77 @@ function renderAgenda(){
   });
   body.innerHTML=html;
   $('a-money').textContent='$'+tM.toLocaleString('es-AR');$('a-prof').textContent='$'+tP.toLocaleString('es-AR');$('a-count').textContent=tC;
+}
+
+/* ---------- TOTALIZADOR ---------- */
+function totalizarProductos(list){
+  const m={};
+  list.forEach(o=>(o.items||[]).forEach(i=>{
+    const nom=i.nombre||'?';m[nom]=(m[nom]||0)+(Number(i.qty)||0);
+  }));
+  return Object.keys(m).sort().map(n=>({nombre:n,qty:m[n]}));
+}
+
+/* ---------- VISTA LISTA / CALENDARIO ---------- */
+let vistaAgenda='lista';
+function setVista(v){
+  vistaAgenda=v;
+  $('vis-lista').classList.toggle('active',v==='lista');
+  $('vis-lista').style.background=v==='lista'?'var(--sage-deep)':'';
+  $('vis-lista').style.color=v==='lista'?'#fff':'';
+  $('vis-cal').classList.toggle('active',v==='calendario');
+  $('vis-cal').style.background=v==='calendario'?'var(--sage-deep)':'';
+  $('vis-cal').style.color=v==='calendario'?'#fff':'';
+  $('agenda-body').style.display=v==='lista'?'block':'none';
+  $('agenda-cal').style.display=v==='calendario'?'block':'none';
+  if(v==='calendario')renderCalendario();
+}
+let calRef=new Date(); // mes mostrado
+function moverMes(delta){calRef.setMonth(calRef.getMonth()+delta);renderCalendario();}
+function renderCalendario(){
+  const cont=$('agenda-cal');
+  const year=calRef.getFullYear(),month=calRef.getMonth();
+  const primero=new Date(year,month,1);
+  const startDow=(primero.getDay()+6)%7; // lunes=0
+  const diasMes=new Date(year,month+1,0).getDate();
+  // agrupo pedidos por día (usando la fecha según modo entrega/ventas)
+  const porDia={};
+  orders.forEach(o=>{const d=agendaDate(o);if(!d)return;const dt=new Date(d);
+    if(dt.getFullYear()===year&&dt.getMonth()===month){const k=dt.getDate();(porDia[k]=porDia[k]||[]).push(o);}});
+  const nombreMes=primero.toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+  const dows=['L','M','M','J','V','S','D'];
+  let html=`<div class="cal-head">
+      <button class="cal-nav" onclick="moverMes(-1)">‹</button>
+      <div class="cal-title" style="text-transform:capitalize">${nombreMes}</div>
+      <button class="cal-nav" onclick="moverMes(1)">›</button>
+    </div>
+    <div class="cal-grid">`+dows.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<startDow;i++)html+=`<div class="cal-cell empty"></div>`;
+  const hoy=new Date();
+  for(let dia=1;dia<=diasMes;dia++){
+    const list=porDia[dia]||[];
+    const esHoy=(hoy.getFullYear()===year&&hoy.getMonth()===month&&hoy.getDate()===dia);
+    const tot=totalizarProductos(list);
+    const chips=tot.slice(0,3).map(t=>`<div class="cal-chip"><b>${t.qty}</b> ${esc(acortar(t.nombre))}</div>`).join('');
+    const masTxt=tot.length>3?`<div class="cal-mas">+${tot.length-3} más</div>`:'';
+    html+=`<div class="cal-cell${esHoy?' hoy':''}${list.length?' con-ped':''}" ${list.length?`onclick="verDia(${dia})"`:''}>
+      <div class="cal-num">${dia}</div>${chips}${masTxt}</div>`;
+  }
+  html+=`</div>`;
+  cont.innerHTML=html;
+}
+function acortar(s){s=s||'';return s.length>10?s.slice(0,9)+'…':s;}
+function verDia(dia){
+  const year=calRef.getFullYear(),month=calRef.getMonth();
+  const list=orders.filter(o=>{const d=agendaDate(o);if(!d)return false;const dt=new Date(d);
+    return dt.getFullYear()===year&&dt.getMonth()===month&&dt.getDate()===dia;});
+  if(!list.length)return;
+  const tot=totalizarProductos(list);
+  let msg=`📅 ${dia}/${month+1}\n\n🧁 A PREPARAR:\n`;
+  msg+=tot.map(t=>`  • ${t.qty}x ${t.nombre}`).join('\n');
+  msg+=`\n\n📋 PEDIDOS:\n`;
+  msg+=list.map(o=>`  • ${o.name}: ${itemsTxt(o.items)}${o.done?' ✓':''}`).join('\n');
+  alert(msg);
 }
 
 /* ---------- ALERTAS ---------- */
