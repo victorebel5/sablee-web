@@ -131,6 +131,19 @@
   .k-btn{width:100%;margin-top:13px;background:transparent;border:1.5px solid var(--sage);color:var(--sage-deep);font-family:'Nunito';font-weight:800;font-size:.88rem;padding:11px;border-radius:10px;cursor:pointer;transition:.16s}
   .k-btn:hover{background:var(--sage);color:#fff}
   .k-btn.undo{border-color:var(--ink-soft);color:var(--ink-soft)}.k-btn.undo:hover{background:var(--ink-soft);color:#fff}
+  .k-btn-rec{width:100%;margin-top:10px;background:rgba(199,154,60,.12);border:1px solid var(--gold);color:var(--gold);font-family:'Nunito';font-weight:800;font-size:.82rem;padding:9px;border-radius:9px;cursor:pointer;transition:.16s}
+  .k-btn-rec:hover{background:var(--gold);color:#fff}
+  .k-receta{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .rec-block{margin-bottom:10px}
+  .rec-block:last-child{margin-bottom:0}
+  .rec-tit{font-family:'Fraunces',serif;font-weight:700;color:var(--sage-deep);font-size:.94rem;margin-bottom:5px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .rec-mult{background:var(--gold);color:#fff;border-radius:6px;padding:1px 7px;font-size:.74rem;font-family:'Nunito'}
+  .rec-tab{width:100%;border-collapse:collapse}
+  .rec-tab td{padding:3px 0;font-size:.84rem}
+  .rec-ing{color:var(--ink)}
+  .rec-uso{text-align:right;color:var(--sage-deep);font-weight:700;white-space:nowrap}
+  .rec-rinde{font-size:.72rem;color:var(--ink-soft);margin-top:5px;font-style:italic}
+  .rec-vacio{font-size:.82rem;color:var(--ink-soft);font-style:italic}
   .ksection{font-family:'Fraunces',serif;font-weight:900;font-size:1.05rem;color:var(--olive);margin:22px 0 11px;display:flex;align-items:center;gap:9px}
   .dot{width:11px;height:11px;border-radius:50%}
   .dot.urgent{background:var(--tom)}.dot.soon{background:var(--gold)}.dot.ok{background:var(--sage)}.dot.done{background:var(--ink-soft)}
@@ -308,7 +321,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const $=id=>document.getElementById(id);
 
-let orders=[],productos=[],chips=[],alerted={};
+let orders=[],productos=[],chips=[],alerted={},recetas=[];
 
 /* ---------- AUTH ---------- */
 async function checkSession(){
@@ -335,6 +348,7 @@ $('logout').addEventListener('click',async()=>{await sb.auth.signOut();location.
 /* ---------- DATOS ---------- */
 async function initData(){
   await cargarProductos();
+  await cargarRecetas();
   await fetchOrders();
   sb.channel('pedidos-rt').on('postgres_changes',{event:'*',schema:'public',table:'pedidos'},()=>fetchOrders()).subscribe();
   sb.channel('prod-rt').on('postgres_changes',{event:'*',schema:'public',table:'productos'},()=>cargarProductos()).subscribe();
@@ -355,6 +369,28 @@ async function cargarProductos(){
     msg.innerHTML='<div class="no-prod">Tu catálogo está vacío. Cargá productos en el catálogo y van a aparecer acá para elegir.</div>';
   }else{msg.innerHTML='';}
 }
+async function cargarRecetas(){
+  const {data,error}=await sb.from('recetas').select('nombre,receta,rinde');
+  if(error){console.error(error);return;}
+  recetas=data||[];
+}
+// normaliza un nombre para comparar (saca emoji, espacios, mayúsculas, acentos)
+function normaliza(s){
+  return (s||'').toString()
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'') // emojis
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // acentos
+    .toLowerCase().replace(/[^a-z0-9]/g,'').trim();
+}
+// busca la receta cuyo nombre coincide con el del producto
+function buscarReceta(nombreProducto){
+  const n=normaliza(nombreProducto);
+  if(!n)return null;
+  // coincidencia exacta primero, después "contiene"
+  let r=recetas.find(x=>normaliza(x.nombre)===n);
+  if(!r)r=recetas.find(x=>normaliza(x.nombre).includes(n)||n.includes(normaliza(x.nombre)));
+  return r||null;
+}
+
 async function fetchOrders(){
   const {data,error}=await sb.from('pedidos').select('*').order('para_cuando',{ascending:true});
   if(error){console.error(error);return;}
@@ -519,6 +555,8 @@ function renderKitchen(){
         <div class="k-items">${itemsHtml(o.items)}</div>
         ${o.tags&&o.tags.length?'<div class="k-tags">'+o.tags.map(t=>'<span class="o-tag">'+esc(t)+'</span>').join('')+'</div>':''}
         ${o.note?'<div class="k-note">📝 '+esc(o.note)+'</div>':''}
+        ${recetasBtn(o)}
+        <div class="k-receta" id="krec-${o.id}" style="display:none"></div>
         <button class="k-btn" onclick="toggle(${o.id})">✓ Marcar preparado</button>
       </div>`).join('')+'</div>';
   });
@@ -531,7 +569,44 @@ function renderKitchen(){
   body.innerHTML=html;
 }
 
-/* ---------- AGENDA ---------- */
+/* ---------- RECETAS EN COCINA ---------- */
+// ¿algún producto del pedido tiene receta? entonces mostramos botón
+function recetasBtn(o){
+  const hay=(o.items||[]).some(i=>buscarReceta(i.nombre));
+  if(!hay)return '';
+  return `<button class="k-btn-rec" onclick="verReceta(${o.id})">📖 Ver receta / ingredientes</button>`;
+}
+window.verReceta=function(id){
+  const cont=$('krec-'+id);
+  if(!cont)return;
+  if(cont.style.display==='block'){cont.style.display='none';return;}
+  const o=orders.find(x=>x.id===id);
+  if(!o)return;
+  let html='';
+  (o.items||[]).forEach(it=>{
+    const r=buscarReceta(it.nombre);
+    if(!r||!r.receta||!r.receta.filas){return;}
+    const qty=Number(it.qty)||1;
+    const rinde=Number(r.rinde)||1;
+    // mostramos ingredientes; si el pedido lleva varias unidades, escalamos
+    html+=`<div class="rec-block"><div class="rec-tit">${esc(it.nombre)} ${qty>1?`<span class="rec-mult">×${qty}</span>`:''}</div>`;
+    html+=`<table class="rec-tab">`;
+    r.receta.filas.forEach(f=>{
+      if(!f.ing)return;
+      const usoBase=parseFloat(String(f.uso).replace(',','.'))||0;
+      // escalamos por cantidad de unidades pedidas
+      const usoTotal=usoBase*qty;
+      const usoTxt=usoTotal?(Number.isInteger(usoTotal)?usoTotal:usoTotal.toFixed(1)):'';
+      html+=`<tr><td class="rec-ing">${esc(f.ing)}</td><td class="rec-uso">${usoTxt} ${esc(f.unidad||'')}</td></tr>`;
+    });
+    html+=`</table>`;
+    if(rinde>1)html+=`<div class="rec-rinde">La receta rinde ${rinde}. ${qty>1?'Cantidades ya multiplicadas por '+qty+'.':''}</div>`;
+    html+=`</div>`;
+  });
+  if(!html)html='<div class="rec-vacio">No se encontró receta para estos productos. Asegurate de que el nombre en la calculadora coincida con el del catálogo.</div>';
+  cont.innerHTML=html;
+  cont.style.display='block';
+};
 let period='day';
 let agendaMode='entrega'; // 'entrega' usa o.when ; 'ventas' usa o.created
 function setAgendaMode(m){
