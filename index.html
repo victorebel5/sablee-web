@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sablée · Dulces Creaciones</title>
+<title>Sablée · Pastelería Artesanal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  /* ============================================================
-     CONFIGURACIÓN RÁPIDA — editá estos datos cuando quieras
-     ============================================================ */
   :root {
     --verde: #969B7F;
     --verde-claro: #CFD4BE;
@@ -39,7 +36,6 @@
   }
   img { max-width: 100%; display: block; }
 
-  /* ---------- HEADER ---------- */
   header {
     position: sticky; top: 0; z-index: 100;
     background: rgba(251, 246, 240, 0.92);
@@ -63,7 +59,6 @@
   nav a:hover { color: var(--verde-fuerte); }
   .nav-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--cacao); cursor: pointer; }
 
-  /* ---------- HERO ---------- */
   .hero {
     text-align: center;
     min-height: calc(100vh - 64px);
@@ -97,13 +92,7 @@
     border: none; cursor: pointer;
   }
   .btn:hover { transform: translateY(-2px); background: var(--verde-oscuro); }
-  .btn-outline {
-    background: transparent; color: var(--cacao);
-    border: 1.5px solid var(--cacao);
-  }
-  .btn-outline:hover { background: var(--cacao); color: var(--crema); }
 
-  /* ---------- SECCIONES ---------- */
   section { padding: 64px 24px; max-width: 1100px; margin: 0 auto; }
   .section-title {
     font-family: var(--font-display);
@@ -116,7 +105,6 @@
     text-transform: uppercase;
   }
 
-  /* ---------- CATÁLOGO ---------- */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -147,30 +135,16 @@
   }
   .card .pedir:hover { background: var(--verde); }
 
-  .tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
-  .tab {
-    background: transparent;
-    border: 1.5px solid var(--crema-oscuro);
-    color: var(--cacao);
-    padding: 9px 26px; border-radius: 30px;
-    font-family: var(--font-body); font-size: 13px; letter-spacing: 1px;
-    cursor: pointer; transition: all 0.3s;
-  }
-  .tab.active { background: var(--verde-fuerte); color: var(--crema); border-color: var(--verde-fuerte); }
-
-  /* ---------- HISTORIA ---------- */
   .historia { background: var(--rosa-claro); }
   .historia-inner { max-width: 720px; margin: 0 auto; text-align: center; }
   .historia p { font-family: var(--font-display); font-size: 21px; font-style: italic; color: var(--cacao); line-height: 1.7; }
 
-  /* ---------- INFO / CONTACTO ---------- */
   .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; }
   .info-item { text-align: center; }
   .info-item .ico { font-size: 30px; margin-bottom: 10px; }
   .info-item h4 { font-family: var(--font-display); font-size: 22px; margin-bottom: 6px; font-weight: 600; }
   .info-item p { font-size: 14px; color: var(--cacao-claro); }
 
-  /* ---------- FOOTER ---------- */
   footer {
     background: var(--cacao);
     color: var(--crema);
@@ -184,7 +158,6 @@
   footer .social a:hover { opacity: 1; }
   footer .copy { font-size: 11px; opacity: 0.5; letter-spacing: 0.5px; }
 
-  /* ---------- FAB WhatsApp ---------- */
   .fab {
     position: fixed; bottom: 24px; right: 24px; z-index: 200;
     background: #25D366; color: #fff;
@@ -196,7 +169,6 @@
   }
   .fab:hover { transform: scale(1.08); }
 
-  /* ---------- RESPONSIVE ---------- */
   @media (max-width: 700px) {
     nav { display: none; }
     nav.open {
@@ -219,13 +191,14 @@
      CONFIGURACIÓN — cambiá el teléfono y datos acá
      El número va con código de país sin + ni espacios.
      Ej Argentina: 5491122334455
+     ⚠️ IMPORTANTE: el WhatsApp de abajo todavía es de EJEMPLO.
+        Cambialo por tu número real cuando tengas el chip nuevo.
      ============================================================ -->
 <script>
   const CONFIG = {
-    whatsapp: "5491100000000",   // <-- PONÉ TU NÚMERO REAL ACÁ
-    instagram: "https://instagram.com/sablee.pasteleriaartesanal",  // <-- tu Instagram cuando lo tengas
+    whatsapp: "5491100000000",   // <-- ⚠️ PONÉ TU NÚMERO REAL ACÁ
+    instagram: "https://instagram.com/sablee.pasteleriaartesanal",
     nombre: "Sablée",
-    // Conexión a la base de datos (datos públicos, seguros para la web)
     supabaseUrl: "https://pjrgybkexbxrlyvhtiyh.supabase.co",
     supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcmd5YmtleGJ4cmx5dmh0aXloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgxOTUsImV4cCI6MjA5NTk5NDE5NX0.Ts3EBhp9XbKiq9sVopNXDxAjAoqa9STrh5WXpMj-vQA",
   };
@@ -244,48 +217,53 @@
 
 <div class="hero">
   <img src="https://pjrgybkexbxrlyvhtiyh.supabase.co/storage/v1/object/public/productos/ChatGPT%20Image%207%20jun%202026,%2011_28_05.png" class="logo">
+  <!-- ===== TEXTO: frase bajo el logo (tagline) ===== -->
   <p class="tagline">Repostería artesanal hecha con tiempo, manteca y cariño.</p>
   <a href="#catalogo" class="btn">Ver el catálogo</a>
 </div>
 
 <section id="catalogo">
   <h2 class="section-title">Nuestras creaciones</h2>
-  <p class="section-sub">Dulces de stock y tortas por encargo</p>
+  <!-- ===== TEXTO: subtítulo del catálogo ===== -->
+  <p class="section-sub">Todo hecho por encargo, especialmente para vos</p>
 
-  <div class="tabs">
-    <button class="tab active" onclick="filtrar('stock', this)">Para llevar ya</button>
-    <button class="tab" onclick="filtrar('encargo', this)">Por encargo</button>
-  </div>
-
+  <!-- (Catálogo: muestra todos los productos disponibles, sin pestañas de filtro.) -->
   <div class="grid" id="grid"></div>
 </section>
 
+<!-- ============================================================
+     SECCIÓN "SOBRE SABLÉE" — editá el texto del párrafo de abajo
+     ============================================================ -->
 <section id="historia" class="historia" style="max-width:none;">
   <div class="historia-inner">
     <h2 class="section-title">Sobre Sablée</h2>
     <p class="section-sub">Hecho a mano, de a poco</p>
-    <p>Sablée nació de las ganas de compartir lo que más me gusta hacer: dulces de verdad, sin apuro, como los de antes. Cada torta y cada alfajor se prepara por encargo, con ingredientes elegidos y mucha dedicación. No hacemos cantidad, hacemos lo que nos sale del corazón.</p>
+    <p>Sablée nació de las ganas de compartir lo que más nos gusta hacer: dulces de verdad, sin apuro, como los de antes. Cada torta, cada budín y cada bocado se prepara por encargo, con ingredientes elegidos y mucha dedicación. No hacemos cantidad: hacemos cada pedido con tiempo y cariño, especialmente para vos.</p>
   </div>
 </section>
 
+<!-- ============================================================
+     SECCIÓN "CÓMO TRABAJAMOS" — editá las 4 tarjetas de abajo.
+     Cada tarjeta tiene: un ícono (emoji), un título <h4> y un texto <p>.
+     ============================================================ -->
 <section id="info">
   <h2 class="section-title">Cómo trabajamos</h2>
   <p class="section-sub">Lo que tenés que saber</p>
   <div class="info-grid">
     <div class="info-item">
-      <div class="ico">🕐</div>
-      <h4>Horarios</h4>
-      <p>Lunes a sábado de 9 a 19 hs.<br>Domingos cerrado.</p>
+      <div class="ico">🧁</div>
+      <h4>Todo por encargo</h4>
+      <p>Trabajamos 100% por encargo. Cada pedido se elabora especialmente para vos, fresco y a tu gusto.</p>
     </div>
     <div class="info-item">
       <div class="ico">📅</div>
-      <h4>Encargos</h4>
-      <p>Las tortas se piden con 48 hs de anticipación mínimo.</p>
+      <h4>Tiempos</h4>
+      <p>Los tiempos de preparación dependen de cada pedido. Escribinos y coordinamos la fecha juntos.</p>
     </div>
     <div class="info-item">
       <div class="ico">🚚</div>
       <h4>Entregas</h4>
-      <p>Envío a domicilio con cargo o retiro sin cargo en el local.</p>
+      <p>Coordinamos la entrega según tu pedido y tu zona. Consultanos al hacer tu encargo.</p>
     </div>
     <div class="info-item">
       <div class="ico">💳</div>
@@ -297,7 +275,8 @@
 
 <footer id="contacto">
   <div class="fbrand">Sablée</div>
-  <div class="fsub">Dulces Creaciones</div>
+  <!-- ===== TEXTO: subtítulo del footer ===== -->
+  <div class="fsub">Pastelería Artesanal</div>
   <div class="social">
     <a id="ig-link" href="#" target="_blank">Instagram</a>
     <a id="wa-link" href="#" target="_blank">WhatsApp</a>
@@ -313,22 +292,15 @@
 </a>
 
 <script>
-  // ============================================================
-  //  Los productos ahora viven en Supabase (base de datos).
-  //  Para editarlos: entrá a tu proyecto en supabase.com,
-  //  Table Editor > productos, y cambiá lo que quieras.
-  //  La web se actualiza sola al recargar.
-  // ============================================================
-
-  let PRODUCTOS = { stock: [], encargo: [] };
-  let categoriaActual = 'stock';
+  // Los productos viven en Supabase. Para editarlos: Table Editor > productos.
+  let PRODUCTOS = [];
 
   function armarTarjeta(p) {
     const emoji = p.emoji || '🧁';
     const desc = p.descripcion || '';
     const precio = p.precio || '';
     const nombreEsc = (p.nombre || '').replace(/'/g, "\\'");
-    const catEsc = (p.categoria || 'stock');
+    const catEsc = (p.categoria || 'encargo');
     const visual = p.imagen
       ? `<img src="${p.imagen}" alt="${p.nombre}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:12px">`
       : `<div class="emoji">${emoji}</div>`;
@@ -342,8 +314,6 @@
       </div>`;
   }
 
-  // Registra la consulta en la base y luego abre WhatsApp.
-  // Si el registro falla, igual abre WhatsApp (no perdemos al cliente).
   async function pedirProducto(event, nombre, categoria) {
     event.preventDefault();
     const msg = encodeURIComponent(`¡Hola Sablée! Quería consultar por: ${nombre} 🧁`);
@@ -368,16 +338,12 @@
     window.open(link, '_blank');
   }
 
-  function filtrar(cat, btn) {
-    categoriaActual = cat;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    const lista = PRODUCTOS[cat] || [];
+  function renderGrid() {
     const grid = document.getElementById('grid');
-    if (lista.length === 0) {
-      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--cacao-claro)">No hay productos en esta categoría por ahora.</p>';
+    if (PRODUCTOS.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--cacao-claro)">No hay productos disponibles por ahora. Escribinos por WhatsApp y te contamos todo 🧁</p>';
     } else {
-      grid.innerHTML = lista.map(armarTarjeta).join('');
+      grid.innerHTML = PRODUCTOS.map(armarTarjeta).join('');
     }
     activarReveal();
   }
@@ -395,27 +361,19 @@
       });
       if (!res.ok) throw new Error('respuesta no ok');
       const data = await res.json();
-      PRODUCTOS = { stock: [], encargo: [] };
-      data.forEach(p => {
-        const cat = p.categoria === 'encargo' ? 'encargo' : 'stock';
-        PRODUCTOS[cat].push(p);
-      });
-      filtrar(categoriaActual, null);
-      const tabActiva = document.querySelector(`.tab`);
-      if (tabActiva) tabActiva.classList.add('active');
+      PRODUCTOS = data;
+      renderGrid();
     } catch (err) {
       console.error('Error cargando productos:', err);
       grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--cacao-claro)">No pudimos cargar el catálogo en este momento. Escribinos por WhatsApp y te contamos todo 🧁</p>';
     }
   }
 
-  // Links de contacto
   const waBase = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('¡Hola Sablée! Quería hacer una consulta 🧁')}`;
   document.getElementById('fab').href = waBase;
   document.getElementById('wa-link').href = waBase;
   document.getElementById('ig-link').href = CONFIG.instagram;
 
-  // Animación de aparición
   function activarReveal() {
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -423,7 +381,6 @@
     document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
   }
 
-  // Init: traigo los productos desde la base
   cargarProductos();
 </script>
 
