@@ -180,7 +180,8 @@
 
     <button class="tbtn" onclick="generarFlyer()" style="width:100%;margin-bottom:16px">✨ Generar vista previa</button>
 
-    <div id="flyer-preview" style="display:flex;justify-content:center;overflow:auto;background:var(--cream-2);border-radius:12px;padding:16px;max-height:540px"></div>
+    <div id="flyer-preview" style="display:flex;justify-content:center;align-items:flex-start;overflow:auto;background:var(--cream-2);border-radius:12px;padding:16px;max-height:60vh"></div>
+    <p style="font-size:.74rem;color:var(--ink-soft);margin-top:6px;text-align:center">La vista previa puede tener scroll. La imagen se descarga completa.</p>
 
     <div class="modal-acts">
       <button class="tbtn alt" onclick="descargarFlyer()">⬇ Descargar imagen</button>
@@ -417,15 +418,42 @@ function cerrarFlyer(){$('modal-flyer').classList.remove('show');}
 async function descargarFlyer(){
   const node=$('flyer-render');
   if(!node){alert('Primero generá la vista previa.');return;}
+  const clon=node.cloneNode(true);
+  const cont=document.createElement('div');
+  cont.style.position='fixed';
+  cont.style.left='-99999px';
+  cont.style.top='0';
+  cont.style.width=node.offsetWidth+'px';
+  cont.style.height='auto';
+  cont.style.overflow='visible';
+  clon.style.height='auto';
+  clon.style.maxHeight='none';
+  clon.style.overflow='visible';
+  document.body.appendChild(cont);
+  cont.appendChild(clon);
   try{
-    const canvas=await html2canvas(node,{scale:3,useCORS:true,backgroundColor:null,logging:false});
+    // esperar fuentes e imágenes
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    await Promise.all([...clon.querySelectorAll('img')].map(img=>{
+      if(img.complete&&img.naturalHeight!==0)return Promise.resolve();
+      return new Promise(res=>{img.onload=res;img.onerror=res;setTimeout(res,3000);});
+    }));
+    // medir la altura REAL del contenido ya renderizado
+    const w=clon.scrollWidth;
+    const h=clon.scrollHeight;
+    const canvas=await html2canvas(clon,{
+      scale:3,useCORS:true,backgroundColor:'#fcfaf3',logging:false,
+      width:w,height:h,windowWidth:w,windowHeight:h,scrollX:0,scrollY:0
+    });
     const link=document.createElement('a');
     link.download='sablee-precios.png';
     link.href=canvas.toDataURL('image/png');
     link.click();
   }catch(e){
-    alert('No se pudo generar la imagen. Si alguna foto falla, probá volver a subirla desde el admin. Detalle: '+e.message);
+    alert('No se pudo generar la imagen. Detalle: '+e.message);
     console.error(e);
+  }finally{
+    document.body.removeChild(cont);
   }
 }
 
