@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sablée · Pedidos &amp; Cocina</title>
+<title>Tía Tere · Pedidos &amp; Cocina</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -196,7 +196,7 @@
 <div id="alert-banner" onclick="this.classList.remove('show')"></div>
 
 <div id="login">
-  <div class="brand">Sablée</div>
+  <div class="brand">Tía Tere</div>
   <div class="sub">Pedidos &amp; Cocina</div>
   <input type="email" id="li-email" placeholder="Tu email" autocomplete="username">
   <input type="password" id="li-pass" placeholder="Contraseña" autocomplete="current-password">
@@ -212,7 +212,7 @@
     <a href="/admin/">⚙️ Catálogo</a>
   </div>
   <header>
-    <div class="brand-h">Sablée<small>Pedidos &amp; Cocina</small></div>
+    <div class="brand-h">Tía Tere<small>Pedidos &amp; Cocina</small></div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <div class="tabs">
         <button class="tab active" data-v="load">✎ Cargar</button>
@@ -770,7 +770,7 @@ function itemsTxt(items){return (items||[]).map(i=>i.qty+'x '+i.nombre).join(', 
 function fireAlert(msg){
   const b=$('alert-banner');b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),9000);
   try{beep();}catch(e){}
-  if('Notification'in window&&Notification.permission==='granted')new Notification('Sablée · Pedido próximo',{body:msg});
+  if('Notification'in window&&Notification.permission==='granted')new Notification('Tía Tere · Pedido próximo',{body:msg});
 }
 function beep(){
   const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();
