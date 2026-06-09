@@ -94,6 +94,7 @@
   .flyer-pad{position:relative;z-index:2;padding:46px 44px}
   /* cabecera */
   .flyer .fh{text-align:center;margin-bottom:30px}
+  .flyer .fh .flogo{width:74px;height:74px;border-radius:50%;object-fit:cover;margin:0 auto 8px;display:block;box-shadow:0 3px 10px rgba(79,93,58,.2);border:2px solid #fff}
   .flyer .fh .forn{font-size:1rem;color:var(--gold);letter-spacing:.5em;margin-bottom:10px;opacity:.8}
   .flyer .fh .fbrand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:3.1rem;color:var(--sage-dark);line-height:.9}
   .flyer .fh .fsub{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--sage);font-weight:800;margin-top:6px}
@@ -118,6 +119,8 @@
   .flyer .ff{text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid rgba(199,154,60,.4)}
   .flyer .ff .fcta{font-family:'Fraunces',serif;font-style:italic;color:var(--sage-deep);font-size:1rem}
   .flyer .ff .fweb{font-size:.64rem;letter-spacing:.14em;color:var(--ink-soft);margin-top:7px;text-transform:uppercase;font-weight:700}
+  .flyer .ff .fcontacto{margin-top:12px;display:flex;flex-direction:column;gap:4px}
+  .flyer .ff .fcline{font-size:.8rem;color:var(--sage-deep);font-weight:600;letter-spacing:.02em}
   .flyer .ff .forn{font-size:.85rem;color:var(--gold);letter-spacing:.4em;margin-top:10px;opacity:.7}
 </style>
 </head>
@@ -360,16 +363,52 @@ function toggleTodos(){
   const todosMarcados=checks.every(c=>c.checked);
   checks.forEach(c=>c.checked=!todosMarcados);
 }
+// Elige un emoji acorde al nombre del producto (ignora el cargado en catálogo)
+function emojiAuto(nombre){
+  const n=(nombre||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,''); // saca acentos
+  // orden importa: lo más específico primero
+  const reglas=[
+    [/cheesecake|cheese|new york/,'🍰'],
+    [/pastafrola|pasta frola/,'🥧'],
+    [/brownie/,'🍫'],
+    [/alfajor/,'🍪'],
+    [/budin|budín/,'🍞'],
+    [/cupcake|magdalena|muffin/,'🧁'],
+    [/bombon|bombón|trufa|chocolate/,'🍬'],
+    [/macaron/,'🌈'],
+    [/coco/,'🥥'],
+    [/torta|tarta|cake/,'🎂'],
+    [/lemon pie|key lime|pie/,'🥧'],
+    [/limon|limón/,'🍋'],
+    [/frutilla|fresa/,'🍓'],
+    [/frutos rojos|berry|arandano|arándano/,'🫐'],
+    [/dulce de leche|ddl/,'🍯'],
+    [/galleta|cookie|cookies/,'🍪'],
+    [/pan|panaderia|panadería/,'🍞'],
+    [/cafe|café/,'☕'],
+    [/helado/,'🍨'],
+    [/medialuna|factura|croissant/,'🥐'],
+    [/mesa dulce|box|caja|surtido/,'🎁'],
+    [/flan/,'🍮'],
+    [/donut|dona|rosquilla/,'🍩'],
+    [/cumple|fiesta/,'🎉'],
+  ];
+  for(const [re,em] of reglas){ if(re.test(n)) return em; }
+  return '🧁'; // genérico lindo
+}
+
 function itemHtml(p){
   const conFoto=tipoFlyer==='fotos';
   const verDesc=$('opt-desc').checked;
+  const emo=emojiAuto(p.nombre); // emoji acorde al nombre
   let visual;
   if(conFoto){
     visual=p.imagen
       ? `<img class="ffoto" src="${esc(p.imagen)}" crossorigin="anonymous">`
-      : `<span class="femoji">${p.emoji||'🧁'}</span>`;
+      : `<span class="femoji">${emo}</span>`;
   }else{
-    visual=`<span class="femoji">${p.emoji||'🧁'}</span>`;
+    visual=`<span class="femoji">${emo}</span>`;
   }
   const desc=(verDesc&&p.descripcion)?`<div class="fdesc">${esc(p.descripcion)}</div>`:'';
   return `<div class="fitem">${visual}
@@ -400,16 +439,19 @@ function generarFlyer(){
       <div class="marco"></div>
       <div class="flyer-pad">
         <div class="fh">
-          <div class="forn">❦</div>
+          <img class="flogo" src="https://pjrgybkexbxrlyvhtiyh.supabase.co/storage/v1/object/public/productos/WhatsApp%20Image%202026-06-08%20at%204.15.23%20PM.jpeg" crossorigin="anonymous">
           <div class="fbrand">Tía Tere</div>
           <div class="fsub">Pastelería Artesanal</div>
           <div class="ftitle">~ Lista de precios ~</div>
         </div>
         ${cuerpo}
         <div class="ff">
-          <div class="fcta">Hacé tu pedido por WhatsApp 🤍</div>
-          <div class="fweb">tiatere.vercel.app</div>
-          <div class="forn">❦</div>
+          <div class="fcta">Hacé tu pedido 🤍</div>
+          <div class="fcontacto">
+            <div class="fcline">📱 WhatsApp: 362 433-2350</div>
+            <div class="fcline">📷 Instagram: @tiatere_pasteleria</div>
+            <div class="fcline">🌐 tiatere.vercel.app</div>
+          </div>
         </div>
       </div>
     </div>`;
