@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sablée · Pastelería Artesanal</title>
+<title>Tía Tere · Pastelería Artesanal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -196,16 +196,16 @@
      ============================================================ -->
 <script>
   const CONFIG = {
-    whatsapp: "5491100000000",   // <-- ⚠️ PONÉ TU NÚMERO REAL ACÁ
-    instagram: "https://instagram.com/sablee.pasteleriaartesanal",
-    nombre: "Sablée",
+    whatsapp: "5493624332350",   // número de Tere (Chaco)
+    instagram: "https://instagram.com/sablee.pasteleriaartesanal",  // <-- ⚠️ ACTUALIZAR al nuevo usuario de Instagram de Tía Tere
+    nombre: "Tía Tere",
     supabaseUrl: "https://pjrgybkexbxrlyvhtiyh.supabase.co",
     supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcmd5YmtleGJ4cmx5dmh0aXloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgxOTUsImV4cCI6MjA5NTk5NDE5NX0.Ts3EBhp9XbKiq9sVopNXDxAjAoqa9STrh5WXpMj-vQA",
   };
 </script>
 
 <header>
-  <span class="nav-brand">Sablée</span>
+  <span class="nav-brand">Tía Tere</span>
   <button class="nav-toggle" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
   <nav id="nav">
     <a href="#catalogo">Catálogo</a>
@@ -216,7 +216,7 @@
 </header>
 
 <div class="hero">
-  <img src="https://pjrgybkexbxrlyvhtiyh.supabase.co/storage/v1/object/public/productos/ChatGPT%20Image%207%20jun%202026,%2011_28_05.png" class="logo">
+  <img src="https://pjrgybkexbxrlyvhtiyh.supabase.co/storage/v1/object/public/productos/WhatsApp%20Image%202026-06-08%20at%204.15.23%20PM.jpeg" class="logo">
   <!-- ===== TEXTO: frase bajo el logo (tagline) ===== -->
   <p class="tagline">Repostería artesanal hecha con tiempo, manteca y cariño.</p>
   <a href="#catalogo" class="btn">Ver el catálogo</a>
@@ -232,13 +232,13 @@
 </section>
 
 <!-- ============================================================
-     SECCIÓN "SOBRE SABLÉE" — editá el texto del párrafo de abajo
+     SECCIÓN "SOBRE TÍA TERE" — editá el texto del párrafo de abajo
      ============================================================ -->
 <section id="historia" class="historia" style="max-width:none;">
   <div class="historia-inner">
-    <h2 class="section-title">Sobre Sablée</h2>
+    <h2 class="section-title">Sobre Tía Tere</h2>
     <p class="section-sub">Hecho a mano, de a poco</p>
-    <p>Sablée nació de las ganas de compartir lo que más nos gusta hacer: dulces de verdad, sin apuro, como los de antes. Cada torta, cada budín y cada bocado se prepara por encargo, con ingredientes elegidos y mucha dedicación. No hacemos cantidad: hacemos cada pedido con tiempo y cariño, especialmente para vos.</p>
+    <p>Tía Tere nació de las ganas de compartir lo que más nos gusta hacer: dulces de verdad, sin apuro, como los de antes. Cada torta, cada budín y cada bocado se prepara por encargo, con ingredientes elegidos y mucha dedicación. No hacemos cantidad: hacemos cada pedido con tiempo y cariño, especialmente para vos.</p>
   </div>
 </section>
 
@@ -274,14 +274,14 @@
 </section>
 
 <footer id="contacto">
-  <div class="fbrand">Sablée</div>
+  <div class="fbrand">Tía Tere</div>
   <!-- ===== TEXTO: subtítulo del footer ===== -->
   <div class="fsub">Pastelería Artesanal</div>
   <div class="social">
     <a id="ig-link" href="#" target="_blank">Instagram</a>
     <a id="wa-link" href="#" target="_blank">WhatsApp</a>
   </div>
-  <div class="copy">© 2026 Sablée · Hecho con cariño</div>
+  <div class="copy">© 2026 Tía Tere · Hecho con cariño</div>
    <div class="copy" style="margin-top:10px">
     <a href="/pedidos/" style="color:var(--crema);opacity:0.4;text-decoration:none">· acceso interno ·</a>
   </div>
@@ -316,7 +316,7 @@
 
   async function pedirProducto(event, nombre, categoria) {
     event.preventDefault();
-    const msg = encodeURIComponent(`¡Hola Sablée! Quería consultar por: ${nombre} 🧁`);
+    const msg = encodeURIComponent(`¡Hola Tía Tere! Quería consultar por: ${nombre} 🧁`);
     const link = `https://wa.me/${CONFIG.whatsapp}?text=${msg}`;
     try {
       await fetch(`${CONFIG.supabaseUrl}/rest/v1/consultas`, {
@@ -369,7 +369,7 @@
     }
   }
 
-  const waBase = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('¡Hola Sablée! Quería hacer una consulta 🧁')}`;
+  const waBase = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('¡Hola Tía Tere! Quería hacer una consulta 🧁')}`;
   document.getElementById('fab').href = waBase;
   document.getElementById('wa-link').href = waBase;
   document.getElementById('ig-link').href = CONFIG.instagram;
