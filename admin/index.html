@@ -122,6 +122,35 @@
   .flyer .ff .fcontacto{margin-top:12px;display:flex;flex-direction:column;gap:4px}
   .flyer .ff .fcline{font-size:.8rem;color:var(--sage-deep);font-weight:600;letter-spacing:.02em}
   .flyer .ff .forn{font-size:.85rem;color:var(--gold);letter-spacing:.4em;margin-top:10px;opacity:.7}
+
+  /* ============ HISTORIAS 9:16 (se exportan en 1080x1920) ============ */
+  .stories-stack{display:flex;flex-direction:column;gap:18px;align-items:center}
+  .flyer-story{position:relative;overflow:hidden;width:540px;height:960px;flex-shrink:0;
+    font-family:'Nunito',sans-serif;
+    background:linear-gradient(170deg,#fcfaf3 0%,#f5f0e4 100%)}
+  .flyer-story .marco{position:absolute;inset:18px;border:1px solid rgba(138,154,111,.35);z-index:1;pointer-events:none}
+  .flyer-story .marco::before{content:"";position:absolute;inset:5px;border:1px solid rgba(199,154,60,.25)}
+  .flyer-story .story-pad{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:48px 46px 40px}
+  .flyer-story .fh{text-align:center;margin-bottom:14px}
+  .flyer-story .fh .flogo{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;box-shadow:0 3px 10px rgba(79,93,58,.2);border:2px solid #fff}
+  .flyer-story .fh .fbrand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:3.1rem;color:var(--sage-dark);line-height:.9}
+  .flyer-story .fh .fsub{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--sage);font-weight:800;margin-top:6px}
+  .flyer-story .fh .ftitle{font-family:'Fraunces',serif;font-weight:500;font-style:italic;color:var(--ink-soft);margin-top:14px;font-size:1.05rem;letter-spacing:.02em}
+  .flyer-story .fh-mini{text-align:center;margin-bottom:10px}
+  .flyer-story .fh-mini .fbrand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.1rem;color:var(--sage-dark);line-height:.9}
+  .flyer-story .fh-mini .fsub{font-size:.52rem;letter-spacing:.38em;text-transform:uppercase;color:var(--sage);font-weight:800;margin-top:5px}
+  .flyer-story .fh-mini .ftitle{font-family:'Fraunces',serif;font-weight:500;font-style:italic;color:var(--ink-soft);margin-top:9px;font-size:.95rem}
+  .flyer-story .story-items{flex:1;display:flex;flex-direction:column;justify-content:space-evenly}
+  .flyer-story .fitem{padding:11px 2px}
+  .flyer-story .fname{font-size:1.15rem}
+  .flyer-story .fprice{font-size:1.25rem}
+  .flyer-story .ffoto{width:74px;height:74px}
+  .flyer-story .fdesc{font-size:.78rem}
+  .flyer-story .ff{text-align:center;margin-top:14px;padding-top:16px;border-top:1px solid rgba(199,154,60,.4)}
+  .flyer-story .scontinua{text-align:center;margin-top:14px;font-family:'Fraunces',serif;font-style:italic;color:var(--sage);font-size:1rem}
+  .flyer-story .sdots{display:flex;gap:9px;justify-content:center;margin-top:12px}
+  .flyer-story .sdot{width:9px;height:9px;border-radius:50%;background:rgba(138,154,111,.3)}
+  .flyer-story .sdot.on{background:var(--gold)}
 </style>
 </head>
 <body>
@@ -171,10 +200,22 @@
       <button class="mini" id="tipo-fotos" onclick="setTipo('fotos')" style="flex:1">📷 Con fotos</button>
     </div>
 
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
       <label class="chk"><input type="checkbox" id="opt-desc" checked> Mostrar descripciones</label>
       <label class="chk"><input type="checkbox" id="opt-cat"> Agrupar por categoría</label>
-      <label class="chk"><input type="checkbox" id="opt-story"> Formato vertical (historia)</label>
+      <label class="chk"><input type="checkbox" id="opt-story"> Formato historia de Instagram (1080×1920, se divide solo)</label>
+    </div>
+
+    <div id="story-opts" style="display:none;margin-bottom:16px">
+      <div style="max-width:280px">
+        <label>Productos por historia</label>
+        <select id="opt-porpag">
+          <option value="4">4 — con descripciones largas</option>
+          <option value="5" selected>5 — recomendado</option>
+          <option value="6">6 — sin descripciones</option>
+        </select>
+      </div>
+      <p style="font-size:.74rem;color:var(--ink-soft);margin-top:6px">En formato historia los productos van en lista corrida (sin separadores de categoría). Si una historia queda apretada, bajá la cantidad por historia o desmarcá las descripciones.</p>
     </div>
 
     <label style="margin-bottom:8px">Productos a incluir</label>
@@ -422,6 +463,8 @@ function generarFlyer(){
   const agrupar=$('opt-cat').checked;
   const story=$('opt-story').checked;
 
+  if(story){generarHistorias(sel);return;}
+
   let cuerpo='';
   if(agrupar){
     const cats=[{k:'stock',t:'Para llevar'},{k:'encargo',t:'Por encargo'}];
@@ -435,7 +478,7 @@ function generarFlyer(){
   }
 
   $('flyer-preview').innerHTML=`
-    <div class="flyer ${story?'ancho-story':''}" id="flyer-render">
+    <div class="flyer" id="flyer-render">
       <div class="marco"></div>
       <div class="flyer-pad">
         <div class="fh">
@@ -456,8 +499,68 @@ function generarFlyer(){
       </div>
     </div>`;
 }
+
+/* ---------- HISTORIAS (1080x1920, paginadas) ---------- */
+const LOGO_URL='https://pjrgybkexbxrlyvhtiyh.supabase.co/storage/v1/object/public/productos/WhatsApp%20Image%202026-06-08%20at%204.15.23%20PM.jpeg';
+
+function storyCabezera(esPrimera){
+  if(esPrimera){
+    return `<div class="fh">
+      <img class="flogo" src="${LOGO_URL}" crossorigin="anonymous">
+      <div class="fbrand">Tía Tere</div>
+      <div class="fsub">Pastelería Artesanal</div>
+      <div class="ftitle">~ Lista de precios ~</div>
+    </div>`;
+  }
+  return `<div class="fh-mini">
+    <div class="fbrand">Tía Tere</div>
+    <div class="fsub">Pastelería Artesanal</div>
+    <div class="ftitle">~ Lista de precios ~</div>
+  </div>`;
+}
+function storyPie(esUltima,actual,total){
+  let pie='';
+  if(esUltima){
+    pie=`<div class="ff">
+      <div class="fcta">Hacé tu pedido 🤍</div>
+      <div class="fcontacto">
+        <div class="fcline">📱 WhatsApp: 362 433-2350</div>
+        <div class="fcline">📷 Instagram: @tiatere_pasteleria</div>
+        <div class="fcline">🌐 tiatere.vercel.app</div>
+      </div>
+    </div>`;
+  }else{
+    pie=`<div class="scontinua">deslizá para ver más →</div>`;
+  }
+  if(total>1){
+    let dots='';
+    for(let j=0;j<total;j++)dots+=`<div class="sdot${j===actual?' on':''}"></div>`;
+    pie+=`<div class="sdots">${dots}</div>`;
+  }
+  return pie;
+}
+function generarHistorias(sel){
+  const porPag=parseInt($('opt-porpag').value)||5;
+  const paginas=[];
+  for(let i=0;i<sel.length;i+=porPag)paginas.push(sel.slice(i,i+porPag));
+  const total=paginas.length;
+  const html=paginas.map((pg,i)=>`
+    <div class="flyer-story" data-page="${i+1}">
+      <div class="marco"></div>
+      <div class="story-pad">
+        ${storyCabezera(i===0)}
+        <div class="story-items">${pg.map(itemHtml).join('')}</div>
+        ${storyPie(i===total-1,i,total)}
+      </div>
+    </div>`).join('');
+  $('flyer-preview').innerHTML=`<div class="stories-stack" id="flyer-render-stories">${html}</div>
+    <p style="font-size:.74rem;color:var(--ink-soft);text-align:center;width:100%">Se generaron ${total} historia${total>1?'s':''}. Al descargar, baja una imagen por historia.</p>`;
+}
 function cerrarFlyer(){$('modal-flyer').classList.remove('show');}
 async function descargarFlyer(){
+  // Si la vista previa es de historias, descarga una imagen por historia
+  if($('flyer-render-stories')){await descargarHistorias();return;}
+
   const node=$('flyer-render');
   if(!node){alert('Primero generá la vista previa.');return;}
   const clon=node.cloneNode(true);
@@ -488,7 +591,7 @@ async function descargarFlyer(){
       width:w,height:h,windowWidth:w,windowHeight:h,scrollX:0,scrollY:0
     });
     const link=document.createElement('a');
-    link.download='sablee-precios.png';
+    link.download='tiatere-precios.png';
     link.href=canvas.toDataURL('image/png');
     link.click();
   }catch(e){
@@ -499,8 +602,50 @@ async function descargarFlyer(){
   }
 }
 
+async function descargarHistorias(){
+  const pages=[...document.querySelectorAll('#flyer-render-stories .flyer-story')];
+  if(!pages.length){alert('Primero generá la vista previa.');return;}
+  for(const page of pages){
+    const clon=page.cloneNode(true);
+    const cont=document.createElement('div');
+    cont.style.position='fixed';
+    cont.style.left='-99999px';
+    cont.style.top='0';
+    document.body.appendChild(cont);
+    cont.appendChild(clon);
+    try{
+      if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+      await Promise.all([...clon.querySelectorAll('img')].map(img=>{
+        if(img.complete&&img.naturalHeight!==0)return Promise.resolve();
+        return new Promise(res=>{img.onload=res;img.onerror=res;setTimeout(res,3000);});
+      }));
+      // 540x960 capturado a escala 2 = 1080x1920 exactos (formato historia de IG)
+      const canvas=await html2canvas(clon,{
+        scale:2,useCORS:true,backgroundColor:'#fcfaf3',logging:false,
+        width:540,height:960,windowWidth:540,windowHeight:960,scrollX:0,scrollY:0
+      });
+      const link=document.createElement('a');
+      link.download='tiatere-historia-'+page.dataset.page+'.png';
+      link.href=canvas.toDataURL('image/png');
+      link.click();
+      // pequeña pausa para que el navegador no bloquee descargas múltiples
+      await new Promise(r=>setTimeout(r,400));
+    }catch(e){
+      alert('No se pudo generar la historia '+page.dataset.page+'. Detalle: '+e.message);
+      console.error(e);
+    }finally{
+      document.body.removeChild(cont);
+    }
+  }
+}
+
 /* ---------- UTILS ---------- */
 function esc(s){return(s||'').toString().replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+// Mostrar opciones extra solo cuando está activo el formato historia
+$('opt-story').addEventListener('change',()=>{
+  $('story-opts').style.display=$('opt-story').checked?'block':'none';
+});
 
 checkSession();
 </script>
