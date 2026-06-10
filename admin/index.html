@@ -123,34 +123,8 @@
   .flyer .ff .fcline{font-size:.8rem;color:var(--sage-deep);font-weight:600;letter-spacing:.02em}
   .flyer .ff .forn{font-size:.85rem;color:var(--gold);letter-spacing:.4em;margin-top:10px;opacity:.7}
 
-  /* ============ HISTORIAS 9:16 (se exportan en 1080x1920) ============ */
+  /* ============ HISTORIAS 9:16 (estilos inline en el JS; acá solo el apilado de la vista previa) ============ */
   .stories-stack{display:flex;flex-direction:column;gap:18px;align-items:center}
-  .flyer-story{position:relative;overflow:hidden;width:540px;height:960px;flex-shrink:0;
-    font-family:'Nunito',sans-serif;
-    background:linear-gradient(170deg,#fcfaf3 0%,#f5f0e4 100%)}
-  .flyer-story .marco{position:absolute;inset:18px;border:1px solid rgba(138,154,111,.35);z-index:1;pointer-events:none}
-  .flyer-story .marco::before{content:"";position:absolute;inset:5px;border:1px solid rgba(199,154,60,.25)}
-  .flyer-story .story-pad{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:48px 46px 40px}
-  .flyer-story .fh{text-align:center;margin-bottom:14px}
-  .flyer-story .fh .flogo{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;box-shadow:0 3px 10px rgba(79,93,58,.2);border:2px solid #fff}
-  .flyer-story .fh .fbrand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:3.1rem;color:var(--sage-dark);line-height:.9}
-  .flyer-story .fh .fsub{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--sage);font-weight:800;margin-top:6px}
-  .flyer-story .fh .ftitle{font-family:'Fraunces',serif;font-weight:500;font-style:italic;color:var(--ink-soft);margin-top:14px;font-size:1.05rem;letter-spacing:.02em}
-  .flyer-story .fh-mini{text-align:center;margin-bottom:10px}
-  .flyer-story .fh-mini .fbrand{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.1rem;color:var(--sage-dark);line-height:.9}
-  .flyer-story .fh-mini .fsub{font-size:.52rem;letter-spacing:.38em;text-transform:uppercase;color:var(--sage);font-weight:800;margin-top:5px}
-  .flyer-story .fh-mini .ftitle{font-family:'Fraunces',serif;font-weight:500;font-style:italic;color:var(--ink-soft);margin-top:9px;font-size:.95rem}
-  .flyer-story .story-items{flex:1;display:flex;flex-direction:column;justify-content:space-evenly}
-  .flyer-story .fitem{padding:11px 2px}
-  .flyer-story .fname{font-size:1.15rem}
-  .flyer-story .fprice{font-size:1.25rem}
-  .flyer-story .ffoto{width:74px;height:74px}
-  .flyer-story .fdesc{font-size:.78rem}
-  .flyer-story .ff{text-align:center;margin-top:14px;padding-top:16px;border-top:1px solid rgba(199,154,60,.4)}
-  .flyer-story .scontinua{text-align:center;margin-top:14px;font-family:'Fraunces',serif;font-style:italic;color:var(--sage);font-size:1rem}
-  .flyer-story .sdots{display:flex;gap:9px;justify-content:center;margin-top:12px}
-  .flyer-story .sdot{width:9px;height:9px;border-radius:50%;background:rgba(138,154,111,.3)}
-  .flyer-story .sdot.on{background:var(--gold)}
 </style>
 </head>
 <body>
@@ -503,53 +477,83 @@ function generarFlyer(){
 /* ---------- HISTORIAS (1080x1920, paginadas) ---------- */
 const LOGO_URL='https://pjrgybkexbxrlyvhtiyh.supabase.co/storage/v1/object/public/productos/WhatsApp%20Image%202026-06-08%20at%204.15.23%20PM.jpeg';
 
-function storyCabezera(esPrimera){
-  if(esPrimera){
-    return `<div class="fh">
-      <img class="flogo" src="${LOGO_URL}" crossorigin="anonymous">
-      <div class="fbrand">Tía Tere</div>
-      <div class="fsub">Pastelería Artesanal</div>
-      <div class="ftitle">~ Lista de precios ~</div>
-    </div>`;
+// Estilos escritos directo en cada elemento (inline) para que la historia
+// salga SIEMPRE bien formada, en la vista previa y en el PNG descargado.
+function itemStoryHtml(p,esPrimero){
+  const verDesc=$('opt-desc').checked;
+  const conFoto=tipoFlyer==='fotos';
+  const emo=emojiAuto(p.nombre);
+  let visual;
+  if(conFoto&&p.imagen){
+    visual=`<img src="${esc(p.imagen)}" crossorigin="anonymous" style="width:76px;height:76px;border-radius:50%;object-fit:cover;flex-shrink:0;border:3px solid #fff;box-shadow:0 3px 9px rgba(79,93,58,.2)">`;
+  }else{
+    visual=`<span style="font-size:2rem;flex-shrink:0;width:40px;text-align:center">${emo}</span>`;
   }
-  return `<div class="fh-mini">
-    <div class="fbrand">Tía Tere</div>
-    <div class="fsub">Pastelería Artesanal</div>
-    <div class="ftitle">~ Lista de precios ~</div>
+  const desc=(verDesc&&p.descripcion)
+    ?`<div style="font-family:'Nunito',sans-serif;font-size:.78rem;color:#74795f;margin-top:3px;line-height:1.3">${esc(p.descripcion)}</div>`
+    :'';
+  const borde=esPrimero?'':'border-top:1px solid rgba(138,154,111,.18);';
+  return `<div style="display:flex;align-items:center;gap:16px;padding:12px 2px;${borde}">
+    ${visual}
+    <div style="flex:1;min-width:0">
+      <div style="font-family:'Fraunces',serif;font-weight:600;color:#48503a;font-size:1.18rem;line-height:1.2">${esc(p.nombre)}</div>${desc}
+    </div>
+    <div style="font-family:'Fraunces',serif;font-weight:900;color:#c79a3c;font-size:1.28rem;white-space:nowrap">${esc(p.precio||'')}</div>
   </div>`;
 }
+
+function storyCabezera(esPrimera){
+  if(esPrimera){
+    return `<div style="text-align:center;margin-bottom:12px">
+      <img src="${LOGO_URL}" crossorigin="anonymous" style="width:86px;height:86px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;border:2px solid #fff;box-shadow:0 3px 10px rgba(79,93,58,.2)">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:3rem;color:#6f8056;line-height:.9">Tía Tere</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:#8a9a6f;font-weight:800;margin-top:6px">Pastelería Artesanal</div>
+      <div style="font-family:'Fraunces',serif;font-style:italic;color:#74795f;margin-top:12px;font-size:1.05rem">~ Lista de precios ~</div>
+    </div>`;
+  }
+  return `<div style="text-align:center;margin-bottom:10px">
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:2.1rem;color:#6f8056;line-height:.9">Tía Tere</div>
+    <div style="font-family:'Nunito',sans-serif;font-size:.52rem;letter-spacing:.38em;text-transform:uppercase;color:#8a9a6f;font-weight:800;margin-top:5px">Pastelería Artesanal</div>
+    <div style="font-family:'Fraunces',serif;font-style:italic;color:#74795f;margin-top:9px;font-size:.95rem">~ Lista de precios ~</div>
+  </div>`;
+}
+
 function storyPie(esUltima,actual,total){
   let pie='';
   if(esUltima){
-    pie=`<div class="ff">
-      <div class="fcta">Hacé tu pedido 🤍</div>
-      <div class="fcontacto">
-        <div class="fcline">📱 WhatsApp: 362 433-2350</div>
-        <div class="fcline">📷 Instagram: @tiatere_pasteleria</div>
-        <div class="fcline">🌐 tiatere.vercel.app</div>
+    pie=`<div style="text-align:center;margin-top:14px;padding-top:16px;border-top:1px solid rgba(199,154,60,.4)">
+      <div style="font-family:'Fraunces',serif;font-style:italic;color:#56663f;font-size:1rem">Hacé tu pedido 🤍</div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Nunito',sans-serif;font-size:.8rem;color:#56663f;font-weight:600">📱 WhatsApp: 362 433-2350</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:.8rem;color:#56663f;font-weight:600">📷 Instagram: @tiatere_pasteleria</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:.8rem;color:#56663f;font-weight:600">🌐 tiatere.vercel.app</div>
       </div>
     </div>`;
   }else{
-    pie=`<div class="scontinua">deslizá para ver más →</div>`;
+    pie=`<div style="text-align:center;margin-top:14px;font-family:'Fraunces',serif;font-style:italic;color:#8a9a6f;font-size:1rem">deslizá para ver más →</div>`;
   }
   if(total>1){
     let dots='';
-    for(let j=0;j<total;j++)dots+=`<div class="sdot${j===actual?' on':''}"></div>`;
-    pie+=`<div class="sdots">${dots}</div>`;
+    for(let j=0;j<total;j++){
+      dots+=`<div style="width:9px;height:9px;border-radius:50%;background:${j===actual?'#c79a3c':'rgba(138,154,111,.3)'}"></div>`;
+    }
+    pie+=`<div style="display:flex;gap:9px;justify-content:center;margin-top:12px">${dots}</div>`;
   }
   return pie;
 }
+
 function generarHistorias(sel){
   const porPag=parseInt($('opt-porpag').value)||5;
   const paginas=[];
   for(let i=0;i<sel.length;i+=porPag)paginas.push(sel.slice(i,i+porPag));
   const total=paginas.length;
   const html=paginas.map((pg,i)=>`
-    <div class="flyer flyer-story" data-page="${i+1}">
-      <div class="marco"></div>
-      <div class="story-pad">
+    <div class="flyer-story-page" data-page="${i+1}" style="position:relative;overflow:hidden;width:540px;height:960px;flex-shrink:0;background:linear-gradient(170deg,#fcfaf3 0%,#f5f0e4 100%);font-family:'Nunito',sans-serif">
+      <div style="position:absolute;top:18px;right:18px;bottom:18px;left:18px;border:1px solid rgba(138,154,111,.35);pointer-events:none"></div>
+      <div style="position:absolute;top:23px;right:23px;bottom:23px;left:23px;border:1px solid rgba(199,154,60,.25);pointer-events:none"></div>
+      <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:48px 46px 40px">
         ${storyCabezera(i===0)}
-        <div class="story-items">${pg.map(itemHtml).join('')}</div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly">${pg.map((p,idx)=>itemStoryHtml(p,idx===0)).join('')}</div>
         ${storyPie(i===total-1,i,total)}
       </div>
     </div>`).join('');
@@ -603,7 +607,7 @@ async function descargarFlyer(){
 }
 
 async function descargarHistorias(){
-  const pages=[...document.querySelectorAll('#flyer-render-stories .flyer-story')];
+  const pages=[...document.querySelectorAll('#flyer-render-stories .flyer-story-page')];
   if(!pages.length){alert('Primero generá la vista previa.');return;}
   for(const page of pages){
     const clon=page.cloneNode(true);
