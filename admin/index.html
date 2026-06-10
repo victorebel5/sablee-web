@@ -545,7 +545,7 @@ function generarHistorias(sel){
   for(let i=0;i<sel.length;i+=porPag)paginas.push(sel.slice(i,i+porPag));
   const total=paginas.length;
   const html=paginas.map((pg,i)=>`
-    <div class="flyer-story" data-page="${i+1}">
+    <div class="flyer flyer-story" data-page="${i+1}">
       <div class="marco"></div>
       <div class="story-pad">
         ${storyCabezera(i===0)}
