@@ -548,17 +548,20 @@ function generarHistorias(sel){
   for(let i=0;i<sel.length;i+=porPag)paginas.push(sel.slice(i,i+porPag));
   const total=paginas.length;
   const html=paginas.map((pg,i)=>`
-    <div class="flyer-story-page" data-page="${i+1}" style="position:relative;overflow:hidden;width:540px;height:960px;flex-shrink:0;background:linear-gradient(170deg,#fcfaf3 0%,#f5f0e4 100%);font-family:'Nunito',sans-serif">
-      <div style="position:absolute;top:18px;right:18px;bottom:18px;left:18px;border:1px solid rgba(138,154,111,.35);pointer-events:none"></div>
-      <div style="position:absolute;top:23px;right:23px;bottom:23px;left:23px;border:1px solid rgba(199,154,60,.25);pointer-events:none"></div>
-      <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:48px 46px 40px">
-        ${storyCabezera(i===0)}
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly">${pg.map((p,idx)=>itemStoryHtml(p,idx===0)).join('')}</div>
-        ${storyPie(i===total-1,i,total)}
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+      <div class="flyer-story-page" data-page="${i+1}" style="position:relative;overflow:hidden;width:540px;height:960px;flex-shrink:0;background:linear-gradient(170deg,#fcfaf3 0%,#f5f0e4 100%);font-family:'Nunito',sans-serif">
+        <div style="position:absolute;top:18px;right:18px;bottom:18px;left:18px;border:1px solid rgba(138,154,111,.35);pointer-events:none"></div>
+        <div style="position:absolute;top:23px;right:23px;bottom:23px;left:23px;border:1px solid rgba(199,154,60,.25);pointer-events:none"></div>
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:48px 46px 40px">
+          ${storyCabezera(i===0)}
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly">${pg.map((p,idx)=>itemStoryHtml(p,idx===0)).join('')}</div>
+          ${storyPie(i===total-1,i,total)}
+        </div>
       </div>
+      <button class="mini upload" onclick="descargarHistoria(${i+1})" style="width:200px">⬇ Descargar historia ${i+1}</button>
     </div>`).join('');
   $('flyer-preview').innerHTML=`<div class="stories-stack" id="flyer-render-stories">${html}</div>
-    <p style="font-size:.74rem;color:var(--ink-soft);text-align:center;width:100%">Se generaron ${total} historia${total>1?'s':''}. Al descargar, baja una imagen por historia.</p>`;
+    <p style="font-size:.74rem;color:var(--ink-soft);text-align:center;width:100%">Se generaron ${total} historia${total>1?'s':''}. Bajalas de a una con su botón, o todas juntas con “Descargar imagen” (el navegador puede pedirte permiso para descargas múltiples — aceptalo).</p>`;
 }
 function cerrarFlyer(){$('modal-flyer').classList.remove('show');}
 async function descargarFlyer(){
@@ -606,39 +609,63 @@ async function descargarFlyer(){
   }
 }
 
+async function capturarHistoria(page){
+  const clon=page.cloneNode(true);
+  const cont=document.createElement('div');
+  cont.style.position='fixed';
+  cont.style.left='-99999px';
+  cont.style.top='0';
+  document.body.appendChild(cont);
+  cont.appendChild(clon);
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    await Promise.all([...clon.querySelectorAll('img')].map(img=>{
+      if(img.complete&&img.naturalHeight!==0)return Promise.resolve();
+      return new Promise(res=>{img.onload=res;img.onerror=res;setTimeout(res,3000);});
+    }));
+    // 540x960 capturado a escala 2 = 1080x1920 exactos (formato historia de IG)
+    const canvas=await html2canvas(clon,{
+      scale:2,useCORS:true,backgroundColor:'#fcfaf3',logging:false,
+      width:540,height:960,windowWidth:540,windowHeight:960,scrollX:0,scrollY:0
+    });
+    return await new Promise(res=>canvas.toBlob(res,'image/png'));
+  }finally{
+    document.body.removeChild(cont);
+  }
+}
+function bajarBlob(blob,nombre){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=nombre;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+async function descargarHistoria(n){
+  const page=document.querySelector('#flyer-render-stories .flyer-story-page[data-page="'+n+'"]');
+  if(!page){alert('Primero generá la vista previa.');return;}
+  try{
+    const blob=await capturarHistoria(page);
+    if(!blob)throw new Error('no se pudo crear la imagen');
+    bajarBlob(blob,'tiatere-historia-'+n+'.png');
+  }catch(e){
+    alert('No se pudo generar la historia '+n+'. Detalle: '+e.message);
+    console.error(e);
+  }
+}
 async function descargarHistorias(){
   const pages=[...document.querySelectorAll('#flyer-render-stories .flyer-story-page')];
   if(!pages.length){alert('Primero generá la vista previa.');return;}
   for(const page of pages){
-    const clon=page.cloneNode(true);
-    const cont=document.createElement('div');
-    cont.style.position='fixed';
-    cont.style.left='-99999px';
-    cont.style.top='0';
-    document.body.appendChild(cont);
-    cont.appendChild(clon);
     try{
-      if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-      await Promise.all([...clon.querySelectorAll('img')].map(img=>{
-        if(img.complete&&img.naturalHeight!==0)return Promise.resolve();
-        return new Promise(res=>{img.onload=res;img.onerror=res;setTimeout(res,3000);});
-      }));
-      // 540x960 capturado a escala 2 = 1080x1920 exactos (formato historia de IG)
-      const canvas=await html2canvas(clon,{
-        scale:2,useCORS:true,backgroundColor:'#fcfaf3',logging:false,
-        width:540,height:960,windowWidth:540,windowHeight:960,scrollX:0,scrollY:0
-      });
-      const link=document.createElement('a');
-      link.download='tiatere-historia-'+page.dataset.page+'.png';
-      link.href=canvas.toDataURL('image/png');
-      link.click();
-      // pequeña pausa para que el navegador no bloquee descargas múltiples
-      await new Promise(r=>setTimeout(r,400));
+      const blob=await capturarHistoria(page);
+      if(!blob)throw new Error('no se pudo crear la imagen');
+      bajarBlob(blob,'tiatere-historia-'+page.dataset.page+'.png');
+      // pausa entre descargas; si el navegador pide permiso para
+      // descargas múltiples, aceptalo y volvé a intentar
+      await new Promise(r=>setTimeout(r,900));
     }catch(e){
       alert('No se pudo generar la historia '+page.dataset.page+'. Detalle: '+e.message);
       console.error(e);
-    }finally{
-      document.body.removeChild(cont);
     }
   }
 }
