@@ -261,7 +261,7 @@ function tarjeta(p){
     <div class="prod-fields">
       <div><label>Nombre</label><input class="f-nombre" value="${esc(p.nombre||'')}"></div>
       <div class="row">
-        <div><label>Precio</label><input class="f-precio" value="${esc(p.precio||'')}" placeholder="$0"></div>
+        <div><label>Precio</label><input class="f-precio" value="${esc(p.precio||'')}" placeholder="$0 — ó: 20cm $20.000 | 24cm $25.000"></div>
         <div><label>Emoji</label><input class="f-emoji" value="${esc(p.emoji||'')}" placeholder="🧁"></div>
       </div>
       <div><label>Descripción</label><textarea class="f-desc">${esc(p.descripcion||'')}</textarea></div>
@@ -413,6 +413,25 @@ function emojiAuto(nombre){
   return '🧁'; // genérico lindo
 }
 
+// Precio con soporte para varios tamaños: en el campo Precio escribí
+// por ejemplo  "20cm $20.000 | 24cm $25.000"  y se muestran apilados.
+// Sin la barra "|" se ve como siempre (un solo precio).
+function precioHtml(precio,tam){
+  const partes=String(precio||'').split('|').map(s=>s.trim()).filter(Boolean);
+  if(partes.length<=1){
+    return `<div style="font-family:'Fraunces',serif;font-weight:900;color:#c79a3c;font-size:${tam}rem;white-space:nowrap;align-self:center">${esc(precio||'')}</div>`;
+  }
+  const tp=(tam*0.85).toFixed(2); // un toque más chico cuando hay dos líneas
+  const linea=seg=>{
+    const m=seg.match(/^(.+?)\s*(\$\s?[\d.,]+)\s*$/);
+    if(m&&m[1].trim()){
+      return `<div style="white-space:nowrap;text-align:right;line-height:1.4"><span style="font-family:'Nunito',sans-serif;font-size:.66rem;color:#74795f;font-weight:800;letter-spacing:.04em;margin-right:6px">${esc(m[1].trim())}</span><span style="font-family:'Fraunces',serif;font-weight:900;color:#c79a3c;font-size:${tp}rem">${esc(m[2])}</span></div>`;
+    }
+    return `<div style="white-space:nowrap;text-align:right;line-height:1.4;font-family:'Fraunces',serif;font-weight:900;color:#c79a3c;font-size:${tp}rem">${esc(seg)}</div>`;
+  };
+  return `<div style="align-self:center;flex-shrink:0">${partes.map(linea).join('')}</div>`;
+}
+
 function itemHtml(p){
   const conFoto=tipoFlyer==='fotos';
   const verDesc=$('opt-desc').checked;
@@ -428,7 +447,7 @@ function itemHtml(p){
   const desc=(verDesc&&p.descripcion)?`<div class="fdesc">${esc(p.descripcion)}</div>`:'';
   return `<div class="fitem">${visual}
     <div class="fmeta"><div class="fname">${esc(p.nombre)}</div>${desc}</div>
-    <div class="fprice">${esc(p.precio||'')}</div></div>`;
+    ${precioHtml(p.precio,1.15)}</div>`;
 }
 function generarFlyer(){
   const ids=[...document.querySelectorAll('.sel-p:checked')].map(c=>c.value);
@@ -498,7 +517,7 @@ function itemStoryHtml(p,esPrimero){
     <div style="flex:1;min-width:0">
       <div style="font-family:'Fraunces',serif;font-weight:600;color:#48503a;font-size:1.18rem;line-height:1.2">${esc(p.nombre)}</div>${desc}
     </div>
-    <div style="font-family:'Fraunces',serif;font-weight:900;color:#c79a3c;font-size:1.28rem;white-space:nowrap">${esc(p.precio||'')}</div>
+    ${precioHtml(p.precio,1.28)}
   </div>`;
 }
 
